@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-say="names.title">Names in DNS</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.svg">
+<meta name="description" content="The names the router answers itself — its static DNS records — and where each of them leads: the router, a device on the map, or nobody. As JSON: /api/names">
+</head>
+<body>
+<header class="bar">
+  <h1 data-say="names.title">Names in DNS</h1>
+  <a class="button" href="/" data-say="names.back">To the map</a>
+  <div class="row">
+    <label class="label" for="tongue" data-say="bar.language">Language:</label>
+    <select id="tongue" title="the page remembers your choice" data-say-title="bar.language.hint"></select>
+  </div>
+  <button type="button" id="theme" title="light or dark" data-say-title="bar.theme">☾</button>
+</header>
+
+<p class="trouble" id="trouble" hidden></p>
+
+<main class="single">
+  <section>
+    <h2 data-say="names.places">Where the names lead</h2>
+    <p class="quiet" data-say="names.places.hint">…</p>
+    <p class="quiet" id="taken" hidden></p>
+    <div id="places"></div>
+  </section>
+
+  <section id="lost-part" hidden>
+    <h2 data-say="names.lost">Leading to nobody</h2>
+    <p class="quiet" data-say="names.lost.hint">…</p>
+    <div id="lost"></div>
+  </section>
+
+  <section id="askers-part" hidden>
+    <h2 data-say="names.askers">Who asks the router</h2>
+    <p class="quiet" data-say="names.askers.hint">…</p>
+    <div id="askers"></div>
+  </section>
+</main>
+
+<script src="lang.js"></script>
+<script src="api.js"></script>
+<script src="page.js"></script>
+<script src="names.js"></script>
+</body>
+</html>

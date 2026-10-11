@@ -1,0 +1,15 @@
+{
+  "segments": {
+    "bridge_main": {"title": "Home", "trusted": true},
+    "vlan20_lab": {"title": "Lab", "colour": "#7f77dd"},
+    "vlan30_iot": {"title": "IoT"},
+    "vlan40_homenet": {"title": "Гости"},
+    "back-to-home-vpn": {"title": "VPN"}
+  },
+  "devices": {
+    "192.168.88.200": {"name": "NAS", "kind": "NAS"},
+    "192.168.20.20": {"name": "server", "kind": "сервер"},
+    "192.168.30.10": {"kind": "ИБП"}
+  },
+  "same": [["192.168.88.200", "192.168.20.30"]]
+}

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-say="app.title">Network map</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.svg">
+<!-- The same network in words: networks, devices and who may go where. A reading agent need
+     not click the map — it is all here. The signpost lives at /llms.txt. -->
+<link rel="alternate" type="text/markdown" href="/network.md" title="The network as text">
+<link rel="alternate" type="text/markdown" href="/llms.txt" title="A signpost for reading agents">
+<link rel="alternate" type="application/json" href="/api/map" title="The same snapshot as JSON">
+<link rel="alternate" type="application/json" href="/api/names" title="The names the router answers itself">
+<meta name="description" content="Home network map. The structure as text: /network.md, the signpost: /llms.txt, the snapshot as JSON: /api/map">
+</head>
+<body>
+<header class="bar">
+  <h1 data-say="app.title">Network map</h1>
+  <div class="row">
+    <label class="label" for="seek" data-say="bar.find">Find:</label>
+    <input type="search" id="seek" placeholder="name, address, MAC" data-say-placeholder="bar.find.hint">
+  </div>
+  <div class="row">
+    <label class="label" for="shelf" data-say="bar.snapshot">Snapshot:</label>
+    <select id="shelf" hidden></select>
+  </div>
+  <p class="when" id="when" data-say="bar.reading">reading the snapshot…</p>
+  <div class="row">
+    <button type="button" id="out" title="zoom out" data-say-title="bar.zoom.out">−</button>
+    <button type="button" id="zoom" title="the whole island" data-say-title="bar.zoom.whole">100%</button>
+    <button type="button" id="in" title="zoom in" data-say-title="bar.zoom.in">+</button>
+  </div>
+  <div class="row">
+    <label class="label" for="tongue" data-say="bar.language">Language:</label>
+    <select id="tongue" title="the page remembers your choice" data-say-title="bar.language.hint"></select>
+  </div>
+  <button type="button" id="theme" title="light or dark" data-say-title="bar.theme">☾</button>
+  <button type="button" id="refresh" data-say="bar.refresh">Refresh</button>
+</header>
+
+<p class="trouble" id="trouble" hidden></p>
+<p class="news" id="news" hidden></p>
+
+<main>
+  <div class="field">
+    <svg id="map" class="map" viewBox="0 0 1200 860" role="img"
+         aria-label="Home network map: subnets, roads and devices"
+         data-say-label="map.about"></svg>
+    <div class="hint" id="hint" hidden></div>
+  </div>
+
+  <section class="scroll" id="scroll">
+    <h2 data-say="scroll.title">Details</h2>
+    <p class="quiet" data-say="scroll.hint">Point at a road or a subnet to see what it lets through. Click to read the rules.</p>
+  </section>
+
+  <section class="journal">
+    <ul class="chips" id="findings"></ul>
+    <ul class="notes" id="notes"></ul>
+    <div class="watchers" id="watchers" hidden></div>
+  </section>
+</main>
+
+<script src="lang.js"></script>
+<script src="api.js"></script>
+<script src="page.js"></script>
+<script src="sprites.js"></script>
+<script src="geometry.js"></script>
+<script src="sight.js"></script>
+<script src="map.js"></script>
+</body>
+</html>

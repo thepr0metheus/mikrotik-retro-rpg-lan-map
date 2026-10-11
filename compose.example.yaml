@@ -1,0 +1,73 @@
+# A starting point for running the map with Docker Compose: copy it to compose.yaml and put in
+# your own router, networks, port and name. The map listens on the host's loopback only, behind
+# a reverse proxy on the same host; its container watcher has no network at all.
+services:
+  lan-map:
+    build: .
+    image: lan-map:latest
+    container_name: lan-map
+    labels:
+      # The name the reverse proxy serves the map by: the map's own list of containers shows the
+      # port by it.
+      arpa.home.lan.name: map.lan.example
+    # Run as the owner of data/, so the snapshot and the layout there stay editable by that owner.
+    user: "1000:1000"
+    # The host's network, listening on the loopback only: the map is reached through the proxy
+    # alone, and the proxy comes from 127.0.0.1 — the one neighbour whose X-Forwarded-For is
+    # believed.
+    network_mode: host
+    volumes:
+      - ./data:/app/data
+    environment:
+      - LAN_MAP_HOST=127.0.0.1
+      - LAN_MAP_PORT=18091
+      - LAN_MAP_TRUSTED_PROXIES=127.0.0.0/8
+      # Who may see the map, and who may move things on it; the router itself moves nothing.
+      - LAN_MAP_SHOW_NETWORKS=192.168.88.0/24
+      - LAN_MAP_MOVE_NETWORKS=192.168.88.0/24
+      - LAN_MAP_MOVE_DENY=192.168.88.1/32
+      - LAN_MAP_ROUTER_HOST=192.168.88.1
+      - LAN_MAP_ROUTER_USER=lan-map
+      # The password stays out of git: data/router.env, one line LAN_MAP_ROUTER_PASSWORD=…, mode 600.
+      - LAN_MAP_ROUTER_PASSWORD_FILE=/app/data/router.env
+      # Nothing on a schedule: the router is asked only on POST /api/refresh — the Refresh button,
+      # the page opened on a snapshot older than ten minutes, a script. A number of minutes here
+      # brings the rounds back.
+      - LAN_MAP_REFRESH_MINUTES=0
+      - LAN_MAP_NAMES_MINUTES=0
+    restart: unless-stopped
+
+  # What runs on this host, for /containers.md: the map's container watcher. The map itself never
+  # touches Docker; this service does, and it has no network at all — the socket and its
+  # read-only folders are all it talks to.
+  containers:
+    # The map's own image, built above. Never pulled: a "lan-map" from a registry is not this one.
+    image: lan-map:latest
+    pull_policy: never
+    container_name: lan-map-containers
+    user: "1000:1000"
+    group_add:
+      - "0"      # when the Docker socket is root:root 0660
+    network_mode: none
+    volumes:
+      - ./data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      # The folders beside the map's: which of them hold a compose file. Read-only, names only.
+      - ..:/apps:ro
+      # On a Synology NAS, DSM's own gate, read-only, at the paths DSM's links point to: the
+      # reverse proxy's nginx folder and the firewall's settings. Only names, ports, targets and
+      # allow/deny lines are copied out of them (lan_map/gate.py).
+      # - /usr/local/etc/nginx:/usr/local/etc/nginx:ro
+      # - /usr/syno/etc/firewall.d:/usr/syno/etc/firewall.d:ro
+    # A snapshot at the start and on each note from the map's POST /api/refresh: nothing on a
+    # schedule. `--every 3600` brings an hourly round back.
+    command: ["python", "-m", "lan_map.containers", "--every", "0"]
+    # Healthy means Docker's socket answers: the one thing a round needs.
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s = socket.socket(socket.AF_UNIX); s.settimeout(3); s.connect('/var/run/docker.sock')"]
+      interval: 5m
+      timeout: 5s
+      start_period: 2m
+    depends_on:
+      - lan-map
+    restart: unless-stopped

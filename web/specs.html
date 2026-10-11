@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-say="specs.title">Characteristics of devices</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.svg">
+<meta name="description" content="What each machine at home is made of — system, processor, cores, memory, disks — as the owner or an agent wrote it down. As text for agents: /specs.md; as JSON: /api/specs">
+</head>
+<body>
+<header class="bar">
+  <h1 data-say="specs.title">Characteristics of devices</h1>
+  <a class="button" href="/" data-say="specs.back">To the map</a>
+  <div class="row">
+    <label class="label" for="tongue" data-say="bar.language">Language:</label>
+    <select id="tongue" title="the page remembers your choice" data-say-title="bar.language.hint"></select>
+  </div>
+  <button type="button" id="theme" title="light or dark" data-say-title="bar.theme">☾</button>
+</header>
+
+<p class="trouble" id="trouble" hidden></p>
+
+<main class="single">
+  <section>
+    <div class="row">
+      <label class="label" for="device" data-say="specs.device">Device:</label>
+      <select id="device"></select>
+    </div>
+    <p class="quiet" id="filled"></p>
+    <p class="quiet" data-say="specs.hint">…</p>
+    <form id="card" class="card" hidden>
+      <div class="lines" id="lines"></div>
+      <div class="row">
+        <button type="submit" id="keep" data-say="specs.save">Save</button>
+        <span class="quiet" id="status"></span>
+      </div>
+    </form>
+  </section>
+
+  <section>
+    <h2 data-say="specs.cards">Cards filled in</h2>
+    <div id="cards"></div>
+  </section>
+</main>
+
+<script src="lang.js"></script>
+<script src="api.js"></script>
+<script src="page.js"></script>
+<script src="specs.js"></script>
+</body>
+</html>

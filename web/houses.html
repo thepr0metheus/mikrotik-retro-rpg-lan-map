@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-say="houses.title">Services and networks</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.svg">
+<meta name="description" content="Who the network is talking to out in the world: every far end of a live connection, named by the router's own answers, and whatever nothing could name.">
+</head>
+<body>
+<header class="bar">
+  <h1 data-say="houses.title">Services and networks</h1>
+  <a class="button" href="/" data-say="houses.back">To the map</a>
+  <div class="row">
+    <label class="label" for="tongue" data-say="bar.language">Language:</label>
+    <select id="tongue" title="the page remembers your choice" data-say-title="bar.language.hint"></select>
+  </div>
+  <button type="button" id="theme" title="light or dark" data-say-title="bar.theme">☾</button>
+</header>
+
+<p class="trouble" id="trouble" hidden></p>
+
+<main class="single">
+  <section>
+    <h2 data-say="houses.known">Known</h2>
+    <p class="quiet" data-say="houses.known.hint">…</p>
+    <p class="quiet" id="taken" hidden></p>
+    <div id="known"></div>
+  </section>
+
+  <section id="unknown-part" hidden>
+    <h2 data-say="houses.unknown">Unknown</h2>
+    <p class="quiet" data-say="houses.unknown.hint">…</p>
+    <div id="unknown"></div>
+  </section>
+</main>
+
+<script src="lang.js"></script>
+<script src="api.js"></script>
+<script src="page.js"></script>
+<script src="houses.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Live data never goes into the image; neither do the repository and the tests.
+data
+.git
+tests
+fixtures
+.claude

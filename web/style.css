@@ -1,0 +1,332 @@
+/* Retro RPG: warm paper, pixel edges, nothing extra. */
+:root {
+  --ink: #2d2417;
+  --paper: #f6edd8;
+  --board: #f3e6bf;
+  --edge: #7a5230;
+  --quiet: #6f6250;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 15px/1.5 "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+h1 { font-size: 18px; margin: 0; }
+h2 { font-size: 15px; margin: 0 0 8px; }
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  border-bottom: 2px solid var(--edge);
+  background: var(--board);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.row { display: flex; align-items: center; gap: 8px; }
+.label { color: var(--quiet); }
+.when { margin: 0 0 0 auto; color: var(--quiet); }
+
+button, select, a.button {
+  font: inherit;
+  padding: 4px 12px;
+  border: 2px solid var(--edge);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+button:hover, select:hover, a.button:hover { background: #fff8e6; }
+/* The link to the text version looks like a button: in a row of buttons, that is its place. */
+a.button { text-decoration: none; display: inline-block; }
+button[disabled] { opacity: .5; cursor: default; }
+.chip.on { background: #e8d9a8; }
+
+.trouble {
+  margin: 0;
+  padding: 8px 16px;
+  background: #fbe3df;
+  border-bottom: 2px solid #b5443a;
+}
+
+/* The scroll is always beside: map on the left, reading on the right, journal below. */
+main {
+  padding: 12px 16px 24px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 26vw, 360px);
+  align-items: start;
+}
+.journal { grid-column: 1 / -1; }
+/* Services and networks: one list, read far more often than it is changed, so an entry is a
+   line until it is opened. */
+main.single { grid-template-columns: minmax(0, 1fr); max-width: 980px; }
+main.single section { margin-bottom: 8px; }
+#seek { font: inherit; padding: 4px 8px; border: 2px solid var(--edge); border-radius: 3px;
+        background: var(--paper); color: var(--ink); min-width: 180px; }
+#save.on { background: #fff8e6; box-shadow: 0 0 0 2px var(--edge) inset; }
+
+.entry {
+  margin-bottom: 4px;
+  background: var(--board);
+  border: 2px solid var(--edge);
+  border-radius: 3px;
+}
+.entry.mine { border-left-width: 8px; }
+.entry.blamed { border-color: #b5443a; }
+.entry .head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  border-radius: 0;
+  padding: 6px 10px;
+}
+.entry .head:hover { background: #fff8e6; }
+.entry .name { flex: 0 0 auto; font-weight: bold; }
+.entry .what { flex: 1 1 auto; color: var(--quiet); overflow: hidden; text-overflow: ellipsis;
+               white-space: nowrap; }
+.entry .work { flex: 0 0 auto; color: var(--quiet); }
+.entry .mark { flex: 0 0 auto; color: var(--quiet); }
+.entry .body { display: none; gap: 10px; flex-wrap: wrap; align-items: end; padding: 0 10px 8px; }
+.entry.open .body { display: flex; }
+.entry .part { display: flex; flex-direction: column; gap: 2px; flex: 1 1 200px; }
+.entry .part input { font: inherit; padding: 4px 6px; border: 2px solid var(--edge);
+                     border-radius: 3px; background: var(--paper); color: var(--ink); }
+.entry .part:first-child { flex: 0 1 180px; }
+/* The addresses nobody could name do not open: there is nothing in them to edit. */
+.entry.flat { display: flex; align-items: center; gap: 10px; padding: 6px 10px; }
+.entry.flat .name { word-break: break-all; }
+.entry.flat .work { margin-left: auto; }
+/* Names: a group per answer the router gives. A name's note can run long, so it wraps beside
+   the name instead of pushing the line wider than the page. */
+.place { margin-bottom: 12px; }
+.place h3 { margin: 10px 0 4px; font-size: 15px; }
+.place .entry.flat { flex-wrap: wrap; align-items: baseline; }
+.place .entry.flat .work { flex: 1 1 260px; margin-left: 0; }
+.entry.off { opacity: .6; }
+.scroll { max-height: calc(100vh - 220px); overflow: auto; }
+.field { position: relative; }
+
+.map {
+  width: 100%;
+  height: auto;
+  /* The island fits whole: a map is not for scrolling, it is for seeing. */
+  max-height: calc(100vh - 220px);
+  min-height: 320px;
+  display: block;
+  border: 3px solid var(--edge);
+  border-radius: 4px;
+  background: #2f6fbf;
+  touch-action: none;
+}
+.map.held { cursor: grabbing; }
+
+.hint {
+  position: absolute;
+  max-width: 340px;
+  padding: 6px 8px;
+  background: var(--board);
+  border: 2px solid var(--edge);
+  border-radius: 4px;
+  pointer-events: none;
+  font-size: 13px;
+  white-space: pre-line;
+  z-index: 3;
+}
+
+.scroll, .journal {
+  background: var(--board);
+  border: 2px solid var(--edge);
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.scroll ul { margin: 4px 0; padding-left: 18px; }
+.scroll li { margin: 2px 0; }
+.quiet { color: var(--quiet); }
+
+.journal { display: grid; gap: 8px; }
+.chips, .notes { list-style: none; margin: 0; padding: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips li {
+  border: 2px solid var(--edge);
+  border-radius: 4px;
+  padding: 4px 10px;
+  background: var(--paper);
+  cursor: pointer;
+}
+.notes li { color: var(--quiet); font-size: 13px; margin: 2px 0; }
+
+/* Cursors and layers by class: the page writes no styles into the markup, bar the hint's place. */
+.held { cursor: grab; }
+.lane { cursor: pointer; }
+.house { cursor: pointer; }
+/* The notice board, the signpost, the crates, the book and the robot: ways from the map into a
+   page of its own. */
+.way-in { cursor: pointer; }
+.way-in:hover { filter: brightness(1.15); }
+/* One device stands in every subnet it lives in. Point at it in one yard and it lights up in
+   all of them: without that, two identical houses read as two devices. */
+.house.lit { filter: drop-shadow(0 0 3px #ffd34d) drop-shadow(0 0 6px #ffd34d); }
+.gone { display: none; }
+
+/* Picking a picture for a host: the icon and the name in one button. */
+.kinds { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.kinds button { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; font-size: 13px; }
+.kinds button.on { background: #e8d9a8; }
+
+.naming { display: flex; gap: 6px; margin-top: 6px; }
+.naming input {
+  font: inherit;
+  padding: 3px 8px;
+  border: 2px solid var(--edge);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  min-width: 220px;
+}
+
+.watchers { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.watchers p { width: 100%; margin: 0; }
+.watchers label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+
+.cart { cursor: help; }
+/* While one cart is held, the others roll past the cursor without noticing it: they neither
+   stop nor steal the caption, and one standing over another no longer takes its place. */
+#map.watching .cart { pointer-events: none; }
+#map.watching .cart.watched { pointer-events: all; }
+
+/* The right-click menu: "do this to that", without leaving the map. */
+.menu {
+  position: absolute;
+  z-index: 5;
+  min-width: 232px;
+  max-width: 280px;
+  padding: 6px;
+  background: var(--board);
+  border: 2px solid var(--edge);
+  border-radius: 4px;
+}
+.menu .head { margin: 0 0 6px; padding: 0 6px; color: var(--quiet); }
+.menu > button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 4px 6px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+}
+.menu > button:hover { background: #e8d9a8; }
+.menu > button.on { background: #e8d9a8; }
+.menu hr { border: none; border-top: 2px solid var(--edge); opacity: .35; margin: 5px 2px; }
+.menu .nest { margin: 4px 0 6px 8px; }
+.menu .naming { margin: 2px 0 6px; }
+.menu .naming input { min-width: 0; flex: 1; }
+
+/* The banner about what is new since the last snapshot. */
+.news {
+  margin: 0;
+  padding: 8px 16px;
+  background: #e9f1d9;
+  border-bottom: 2px solid #639922;
+  cursor: pointer;
+}
+
+#seek {
+  font: inherit;
+  padding: 3px 8px;
+  border: 2px solid var(--edge);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  min-width: 180px;
+}
+
+/* Looking back: a map on an old snapshot shows it at once. */
+body.back .map { border-color: #8a6a2a; }
+body.back .bar { background: #efe0bd; }
+
+/* Dark theme: the paper turns to night, the picture on the map stays the same. */
+:root[data-theme="dark"] {
+  --ink: #ece3cf;
+  --paper: #1e2531;
+  --board: #2a3242;
+  --edge: #6f5b3a;
+  --quiet: #a49a86;
+}
+:root[data-theme="dark"] .menu > button:hover,
+:root[data-theme="dark"] .menu > button.on,
+:root[data-theme="dark"] .chip.on { background: #3b4658; }
+:root[data-theme="dark"] .news { background: #2b3a2a; border-bottom-color: #639922; }
+:root[data-theme="dark"] .trouble { background: #4a2b2b; }
+:root[data-theme="dark"] button:hover, :root[data-theme="dark"] select:hover { background: #333d4d; }
+
+/* A phone: the bar in a column, the map full width, the scroll below it. */
+@media (max-width: 760px) {
+  .map { max-height: calc(100vh - 260px); }
+  .bar { gap: 8px 10px; padding: 8px 10px; }
+  .when { margin-left: 0; width: 100%; }
+  main { padding: 8px 10px 16px; }
+  main { grid-template-columns: minmax(0, 1fr); }
+  .scroll { max-height: none; }
+  #seek { min-width: 120px; }
+  .menu { max-width: 220px; }
+}
+
+.grip { cursor: nwse-resize; }
+
+/* Everything about a house is in the scroll: buttons in one row under the description. */
+.tools { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.tools button { padding: 3px 8px; font-size: 13px; }
+.tools button.on { background: #e8d9a8; }
+
+/* Doors reach the scroll after the rest: let the room for them be visible at once. */
+.doors { margin: 4px 0 8px; }
+.doors button { padding: 3px 8px; font-size: 13px; }
+
+/* Signs, flags and moss are captions, not things: the mouse passes through to the house. */
+.notes { pointer-events: none; }
+
+/* A sign by a road steps aside when you look behind it. The page decides which one is under
+   the pointer; here it only fades, so a sign does not blink out from under a moving cursor. */
+.notes .sign { transition: opacity 120ms ease; }
+.notes .sign.away { opacity: 0; }
+
+/* The page of cards: a line per field the server names, the long ones across the whole form. */
+main.single .row { flex-wrap: wrap; }
+#device { flex: 1 1 260px; min-width: 0; max-width: 100%; }
+.card { margin: 10px 0; padding: 10px; background: var(--board); border: 2px solid var(--edge);
+        border-radius: 3px; }
+.card .lines { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+               gap: 8px 14px; margin-bottom: 10px; }
+.card .line { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.card .line.wide { grid-column: 1 / -1; }
+.card input, .card textarea, .card select { font: inherit; padding: 4px 6px; border: 2px solid var(--edge);
+                                            border-radius: 3px; background: var(--paper); color: var(--ink); }
+.card .disk { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.card .disk .size { width: 120px; }
+.card .disk .type { flex: 1 1 160px; min-width: 0; }
+.card .line > button { align-self: flex-start; }
+#cards h3 a { color: inherit; }
+
+/* A mark in the scroll: what a line is at a glance, named under the pointer. */
+#scroll .mark { cursor: help; }
+/* Lines of access start with their own arrow: no bullet before it. */
+.scroll ul.reach { list-style: none; padding-left: 0; }
+/* A line's exceptions stand under it: the word past its arrow, each exception a step further in. */
+.scroll ul.reach ul.under { list-style: none; margin: 2px 0; padding-left: 1.6em; }
+.scroll ul.reach ul.under ul.under { padding-left: 1.1em; }
