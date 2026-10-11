@@ -1,0 +1,1429 @@
+{
+ "taken": "2026-10-11T09:57:01+00:00",
+ "tables": {
+  "system/resource": {
+   "uptime": "2w3d04:05:06",
+   "version": "7.20 (stable)",
+   "board-name": "hAP ax3",
+   "architecture-name": "arm64",
+   "cpu-load": "4",
+   "free-memory": "812000000",
+   "total-memory": "1073741824",
+   "platform": "MikroTik"
+  },
+  "ip/address": [
+   {
+    ".id": "*1",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.88.1/24",
+    "network": "192.168.88.0",
+    "interface": "bridge_main",
+    "actual-interface": "bridge_main",
+    "invalid": "false"
+   },
+   {
+    ".id": "*2",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.10.1/24",
+    "network": "192.168.10.0",
+    "interface": "vlan10_guests",
+    "actual-interface": "vlan10_guests",
+    "invalid": "false"
+   },
+   {
+    ".id": "*3",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.20.1/24",
+    "network": "192.168.20.0",
+    "interface": "vlan20_nas",
+    "actual-interface": "vlan20_nas",
+    "invalid": "false"
+   },
+   {
+    ".id": "*4",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.30.1/24",
+    "network": "192.168.30.0",
+    "interface": "vlan30_iot",
+    "actual-interface": "vlan30_iot",
+    "invalid": "false"
+   },
+   {
+    ".id": "*5",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.216.1/24",
+    "network": "192.168.216.0",
+    "interface": "back-to-home-vpn",
+    "actual-interface": "back-to-home-vpn",
+    "invalid": "false"
+   },
+   {
+    ".id": "*6",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.1.2/24",
+    "network": "192.168.1.0",
+    "interface": "ether1",
+    "actual-interface": "ether1",
+    "invalid": "false"
+   }
+  ],
+  "interface": [
+   {
+    ".id": "*7",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "ether1",
+    "type": "ether",
+    "running": "true",
+    "mac-address": "02:00:00:00:00:01"
+   },
+   {
+    ".id": "*8",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "bridge_main",
+    "type": "bridge",
+    "running": "true",
+    "mac-address": "02:00:00:00:00:02"
+   },
+   {
+    ".id": "*9",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "vlan10_guests",
+    "type": "vlan",
+    "running": "true",
+    "mac-address": "02:00:00:00:00:03"
+   },
+   {
+    ".id": "*A",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "vlan20_nas",
+    "type": "vlan",
+    "running": "true",
+    "mac-address": "02:00:00:00:00:04"
+   },
+   {
+    ".id": "*B",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "vlan30_iot",
+    "type": "vlan",
+    "running": "true",
+    "mac-address": "02:00:00:00:00:05"
+   },
+   {
+    ".id": "*C",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "wifi1",
+    "type": "wifi",
+    "running": "true",
+    "mac-address": "02:00:00:00:00:06"
+   },
+   {
+    ".id": "*D",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "wifi2",
+    "type": "wifi",
+    "running": "true",
+    "mac-address": "02:00:00:00:00:07"
+   },
+   {
+    ".id": "*E",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "back-to-home-vpn",
+    "type": "wg",
+    "running": "true",
+    "mac-address": "02:00:00:00:00:08"
+   }
+  ],
+  "interface/vlan": [
+   {
+    ".id": "*1D",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "vlan10_guests",
+    "interface": "bridge_main",
+    "vlan-id": "10"
+   },
+   {
+    ".id": "*1E",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "vlan20_nas",
+    "interface": "bridge_main",
+    "vlan-id": "20"
+   },
+   {
+    ".id": "*1F",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "vlan30_iot",
+    "interface": "bridge_main",
+    "vlan-id": "30"
+   }
+  ],
+  "interface/bridge/port": [],
+  "interface/bridge/vlan": [],
+  "interface/list": [
+   {
+    ".id": "*F",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "LAN",
+    "builtin": "false",
+    "comment": ""
+   },
+   {
+    ".id": "*10",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "WAN",
+    "builtin": "false",
+    "comment": ""
+   },
+   {
+    ".id": "*11",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "SEGMENTS",
+    "builtin": "false",
+    "comment": ""
+   }
+  ],
+  "interface/list/member": [
+   {
+    ".id": "*12",
+    "disabled": "false",
+    "dynamic": "false",
+    "list": "LAN",
+    "interface": "bridge_main"
+   },
+   {
+    ".id": "*13",
+    "disabled": "false",
+    "dynamic": "false",
+    "list": "LAN",
+    "interface": "vlan10_guests"
+   },
+   {
+    ".id": "*14",
+    "disabled": "false",
+    "dynamic": "false",
+    "list": "LAN",
+    "interface": "vlan20_nas"
+   },
+   {
+    ".id": "*15",
+    "disabled": "false",
+    "dynamic": "false",
+    "list": "LAN",
+    "interface": "vlan30_iot"
+   },
+   {
+    ".id": "*16",
+    "disabled": "false",
+    "dynamic": "false",
+    "list": "LAN",
+    "interface": "back-to-home-vpn"
+   },
+   {
+    ".id": "*17",
+    "disabled": "false",
+    "dynamic": "false",
+    "list": "WAN",
+    "interface": "ether1"
+   },
+   {
+    ".id": "*18",
+    "disabled": "false",
+    "dynamic": "false",
+    "list": "SEGMENTS",
+    "interface": "bridge_main"
+   },
+   {
+    ".id": "*19",
+    "disabled": "false",
+    "dynamic": "false",
+    "list": "SEGMENTS",
+    "interface": "vlan10_guests"
+   },
+   {
+    ".id": "*1A",
+    "disabled": "false",
+    "dynamic": "false",
+    "list": "SEGMENTS",
+    "interface": "vlan20_nas"
+   },
+   {
+    ".id": "*1B",
+    "disabled": "false",
+    "dynamic": "false",
+    "list": "SEGMENTS",
+    "interface": "vlan30_iot"
+   },
+   {
+    ".id": "*1C",
+    "disabled": "false",
+    "dynamic": "false",
+    "list": "SEGMENTS",
+    "interface": "back-to-home-vpn"
+   }
+  ],
+  "ip/dhcp-server": [
+   {
+    ".id": "*20",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "dhcp_bridge_main",
+    "interface": "bridge_main"
+   },
+   {
+    ".id": "*21",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "dhcp_vlan10_guests",
+    "interface": "vlan10_guests"
+   },
+   {
+    ".id": "*22",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "dhcp_vlan20_nas",
+    "interface": "vlan20_nas"
+   },
+   {
+    ".id": "*23",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "dhcp_vlan30_iot",
+    "interface": "vlan30_iot"
+   }
+  ],
+  "ip/dhcp-server/network": [],
+  "ip/dhcp-server/lease": [
+   {
+    ".id": "*24",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.88.10",
+    "comment": "MacBook",
+    "server": "dhcp_bridge_main",
+    "status": "bound",
+    "active-address": "192.168.88.10",
+    "mac-address": "02:00:00:00:01:00",
+    "host-name": "MacBook",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*27",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.88.11",
+    "comment": "Desktop",
+    "server": "dhcp_bridge_main",
+    "status": "bound",
+    "active-address": "192.168.88.11",
+    "mac-address": "02:00:00:00:01:01",
+    "host-name": "Desktop",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*29",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.88.12",
+    "comment": "Phone",
+    "server": "dhcp_bridge_main",
+    "status": "bound",
+    "active-address": "192.168.88.12",
+    "mac-address": "02:00:00:00:01:02",
+    "host-name": "Phone",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*2C",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.88.13",
+    "comment": "Tablet",
+    "server": "dhcp_bridge_main",
+    "status": "bound",
+    "active-address": "192.168.88.13",
+    "mac-address": "02:00:00:00:01:03",
+    "host-name": "Tablet",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*2F",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.88.14",
+    "comment": "Smart TV",
+    "server": "dhcp_bridge_main",
+    "status": "bound",
+    "active-address": "192.168.88.14",
+    "mac-address": "02:00:00:00:01:04",
+    "host-name": "Smart-TV",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*31",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.88.20",
+    "comment": "Access point",
+    "server": "dhcp_bridge_main",
+    "status": "bound",
+    "active-address": "192.168.88.20",
+    "mac-address": "02:00:00:00:01:05",
+    "host-name": "Access-point",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*33",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.10.21",
+    "comment": "Guest phone",
+    "server": "dhcp_vlan10_guests",
+    "status": "bound",
+    "active-address": "192.168.10.21",
+    "mac-address": "02:00:00:00:01:06",
+    "host-name": "Guest-phone",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*36",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.10.22",
+    "comment": "Guest laptop",
+    "server": "dhcp_vlan10_guests",
+    "status": "bound",
+    "active-address": "192.168.10.22",
+    "mac-address": "02:00:00:00:01:07",
+    "host-name": "Guest-laptop",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*39",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.10.23",
+    "comment": "Old iPad",
+    "server": "dhcp_vlan10_guests",
+    "status": "bound",
+    "active-address": "192.168.10.23",
+    "mac-address": "02:00:00:00:01:08",
+    "host-name": "Old-iPad",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*3C",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.20.10",
+    "comment": "NAS",
+    "server": "dhcp_vlan20_nas",
+    "status": "bound",
+    "active-address": "192.168.20.10",
+    "mac-address": "02:00:00:00:01:09",
+    "host-name": "NAS",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*3E",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.20.30",
+    "comment": "UPS",
+    "server": "dhcp_vlan20_nas",
+    "status": "bound",
+    "active-address": "192.168.20.30",
+    "mac-address": "02:00:00:00:01:0A",
+    "host-name": "UPS",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*40",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.20.40",
+    "comment": "Home Assistant",
+    "server": "dhcp_vlan20_nas",
+    "status": "bound",
+    "active-address": "192.168.20.40",
+    "mac-address": "02:00:00:00:01:0B",
+    "host-name": "Home-Assistant",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*42",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.30.21",
+    "comment": "Camera",
+    "server": "dhcp_vlan30_iot",
+    "status": "bound",
+    "active-address": "192.168.30.21",
+    "mac-address": "02:00:00:00:01:0C",
+    "host-name": "Camera",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*45",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.30.22",
+    "comment": "Printer",
+    "server": "dhcp_vlan30_iot",
+    "status": "bound",
+    "active-address": "192.168.30.22",
+    "mac-address": "02:00:00:00:01:0D",
+    "host-name": "Printer",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*48",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.30.23",
+    "comment": "Thermostat",
+    "server": "dhcp_vlan30_iot",
+    "status": "bound",
+    "active-address": "192.168.30.23",
+    "mac-address": "02:00:00:00:01:0E",
+    "host-name": "Thermostat",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*4B",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.30.24",
+    "comment": "Robot vacuum",
+    "server": "dhcp_vlan30_iot",
+    "status": "bound",
+    "active-address": "192.168.30.24",
+    "mac-address": "02:00:00:00:01:0F",
+    "host-name": "Robot-vacuum",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*4E",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.30.25",
+    "comment": "Smart plug",
+    "server": "dhcp_vlan30_iot",
+    "status": "bound",
+    "active-address": "192.168.30.25",
+    "mac-address": "02:00:00:00:01:10",
+    "host-name": "Smart-plug",
+    "last-seen": "1m"
+   },
+   {
+    ".id": "*51",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "192.168.30.26",
+    "comment": "Speaker",
+    "server": "dhcp_vlan30_iot",
+    "status": "bound",
+    "active-address": "192.168.30.26",
+    "mac-address": "02:00:00:00:01:11",
+    "host-name": "Speaker",
+    "last-seen": "1m"
+   }
+  ],
+  "ip/arp": [
+   {
+    ".id": "*25",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.88.10",
+    "interface": "bridge_main",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:00"
+   },
+   {
+    ".id": "*28",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.88.11",
+    "interface": "bridge_main",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:01"
+   },
+   {
+    ".id": "*2A",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.88.12",
+    "interface": "bridge_main",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:02"
+   },
+   {
+    ".id": "*2D",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.88.13",
+    "interface": "bridge_main",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:03"
+   },
+   {
+    ".id": "*30",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.88.14",
+    "interface": "bridge_main",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:04"
+   },
+   {
+    ".id": "*32",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.88.20",
+    "interface": "bridge_main",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:05"
+   },
+   {
+    ".id": "*34",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.10.21",
+    "interface": "vlan10_guests",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:06"
+   },
+   {
+    ".id": "*37",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.10.22",
+    "interface": "vlan10_guests",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:07"
+   },
+   {
+    ".id": "*3A",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.10.23",
+    "interface": "vlan10_guests",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:08"
+   },
+   {
+    ".id": "*3D",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.20.10",
+    "interface": "vlan20_nas",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:09"
+   },
+   {
+    ".id": "*3F",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.20.30",
+    "interface": "vlan20_nas",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:0A"
+   },
+   {
+    ".id": "*41",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.20.40",
+    "interface": "vlan20_nas",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:0B"
+   },
+   {
+    ".id": "*43",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.30.21",
+    "interface": "vlan30_iot",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:0C"
+   },
+   {
+    ".id": "*46",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.30.22",
+    "interface": "vlan30_iot",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:0D"
+   },
+   {
+    ".id": "*49",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.30.23",
+    "interface": "vlan30_iot",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:0E"
+   },
+   {
+    ".id": "*4C",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.30.24",
+    "interface": "vlan30_iot",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:0F"
+   },
+   {
+    ".id": "*4F",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.30.25",
+    "interface": "vlan30_iot",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:10"
+   },
+   {
+    ".id": "*52",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.30.26",
+    "interface": "vlan30_iot",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:01:11"
+   },
+   {
+    ".id": "*54",
+    "disabled": "false",
+    "dynamic": "true",
+    "address": "192.168.1.1",
+    "interface": "ether1",
+    "complete": "true",
+    "status": "reachable",
+    "mac-address": "02:00:00:00:03:84"
+   }
+  ],
+  "ip/neighbor": [],
+  "ip/dns/static": [
+   {
+    ".id": "*6F",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "router.lan.example",
+    "address": "192.168.88.1",
+    "type": "A"
+   },
+   {
+    ".id": "*70",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "nas.lan.example",
+    "address": "192.168.20.10",
+    "type": "A"
+   },
+   {
+    ".id": "*71",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "ha.lan.example",
+    "address": "192.168.20.40",
+    "type": "A"
+   }
+  ],
+  "ip/dns/cache": [
+   {
+    ".id": "*72",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "www.youtube.com",
+    "data": "142.250.74.110",
+    "type": "A",
+    "ttl": "5m"
+   },
+   {
+    ".id": "*73",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "api.anthropic.com",
+    "data": "160.79.104.10",
+    "type": "A",
+    "ttl": "5m"
+   },
+   {
+    ".id": "*74",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "ipv4-c001-lhr001.1.nflxvideo.net",
+    "data": "45.57.90.1",
+    "type": "A",
+    "ttl": "5m"
+   },
+   {
+    ".id": "*75",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "github.com",
+    "data": "140.82.121.4",
+    "type": "A",
+    "ttl": "5m"
+   },
+   {
+    ".id": "*76",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "spclient.wg.spotify.com",
+    "data": "35.186.224.25",
+    "type": "A",
+    "ttl": "5m"
+   }
+  ],
+  "ip/route": [
+   {
+    ".id": "*6E",
+    "disabled": "false",
+    "dynamic": "true",
+    "gateway": "192.168.1.1",
+    "dst-address": "0.0.0.0/0"
+   }
+  ],
+  "interface/wifi/registration-table": [
+   {
+    ".id": "*26",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi1",
+    "ssid": "Home",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:00",
+    "last-activity": "0ms"
+   },
+   {
+    ".id": "*2B",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi1",
+    "ssid": "Home",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:02",
+    "last-activity": "0ms"
+   },
+   {
+    ".id": "*2E",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi1",
+    "ssid": "Home",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:03",
+    "last-activity": "0ms"
+   },
+   {
+    ".id": "*35",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi2",
+    "ssid": "Guests",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:06",
+    "last-activity": "0ms"
+   },
+   {
+    ".id": "*38",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi2",
+    "ssid": "Guests",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:07",
+    "last-activity": "0ms"
+   },
+   {
+    ".id": "*3B",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi2",
+    "ssid": "Guests",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:08",
+    "last-activity": "0ms"
+   },
+   {
+    ".id": "*44",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi1",
+    "ssid": "Home",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:0C",
+    "last-activity": "0ms"
+   },
+   {
+    ".id": "*47",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi1",
+    "ssid": "Home",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:0D",
+    "last-activity": "0ms"
+   },
+   {
+    ".id": "*4A",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi1",
+    "ssid": "Home",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:0E",
+    "last-activity": "0ms"
+   },
+   {
+    ".id": "*4D",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi1",
+    "ssid": "Home",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:0F",
+    "last-activity": "0ms"
+   },
+   {
+    ".id": "*50",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi1",
+    "ssid": "Home",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:10",
+    "last-activity": "0ms"
+   },
+   {
+    ".id": "*53",
+    "disabled": "false",
+    "dynamic": "false",
+    "interface": "wifi1",
+    "ssid": "Home",
+    "signal": "-55",
+    "mac-address": "02:00:00:00:01:11",
+    "last-activity": "0ms"
+   }
+  ],
+  "interface/wireguard/peers": [
+   {
+    ".id": "*55",
+    "disabled": "false",
+    "dynamic": "true",
+    "interface": "back-to-home-vpn",
+    "comment": "back-to-home-vpn Travel phone",
+    "allowed-address": "192.168.216.2/32",
+    "last-handshake": "00:00:40"
+   }
+  ],
+  "ip/firewall/filter": [
+   {
+    ".id": "*56",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "input",
+    "comment": "defconf: accept established,related,untracked",
+    "packets": "812000",
+    "bytes": "730800000",
+    "invalid": "false",
+    "action": "accept",
+    "connection-state": "established,related,untracked"
+   },
+   {
+    ".id": "*57",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "input",
+    "comment": "defconf: drop invalid",
+    "packets": "140",
+    "bytes": "126000",
+    "invalid": "false",
+    "action": "drop",
+    "connection-state": "invalid"
+   },
+   {
+    ".id": "*58",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "input",
+    "comment": "defconf: accept ICMP",
+    "packets": "9100",
+    "bytes": "8190000",
+    "invalid": "false",
+    "action": "accept",
+    "protocol": "icmp"
+   },
+   {
+    ".id": "*59",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "input",
+    "comment": "home: everything to the router",
+    "packets": "52000",
+    "bytes": "46800000",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface": "bridge_main"
+   },
+   {
+    ".id": "*5A",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "input",
+    "comment": "all networks: DNS",
+    "packets": "61000",
+    "bytes": "54900000",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface-list": "SEGMENTS",
+    "protocol": "udp",
+    "dst-port": "53"
+   },
+   {
+    ".id": "*5B",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "input",
+    "comment": "all networks: DNS over TCP",
+    "packets": "800",
+    "bytes": "720000",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface-list": "SEGMENTS",
+    "protocol": "tcp",
+    "dst-port": "53"
+   },
+   {
+    ".id": "*5C",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "input",
+    "comment": "all networks: DHCP",
+    "packets": "3300",
+    "bytes": "2970000",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface-list": "SEGMENTS",
+    "protocol": "udp",
+    "dst-port": "67-68"
+   },
+   {
+    ".id": "*5D",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "input",
+    "comment": "all networks: time",
+    "packets": "1200",
+    "bytes": "1080000",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface-list": "SEGMENTS",
+    "protocol": "udp",
+    "dst-port": "123"
+   },
+   {
+    ".id": "*5E",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "input",
+    "comment": "defconf: drop all not coming from LAN",
+    "packets": "21000",
+    "bytes": "18900000",
+    "invalid": "false",
+    "action": "drop",
+    "in-interface-list": "!LAN"
+   },
+   {
+    ".id": "*5F",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "input",
+    "comment": "all networks: nothing else to the router",
+    "packets": "650",
+    "bytes": "585000",
+    "invalid": "false",
+    "action": "drop",
+    "in-interface-list": "SEGMENTS"
+   },
+   {
+    ".id": "*60",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "defconf: fasttrack",
+    "packets": "2400000",
+    "bytes": "2160000000",
+    "invalid": "false",
+    "action": "fasttrack-connection",
+    "connection-state": "established,related"
+   },
+   {
+    ".id": "*61",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "defconf: accept established,related,untracked",
+    "packets": "2600000",
+    "bytes": "2340000000",
+    "invalid": "false",
+    "action": "accept",
+    "connection-state": "established,related,untracked"
+   },
+   {
+    ".id": "*62",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "defconf: drop invalid",
+    "packets": "310",
+    "bytes": "279000",
+    "invalid": "false",
+    "action": "drop",
+    "connection-state": "invalid"
+   },
+   {
+    ".id": "*63",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "everything from WAN: no",
+    "packets": "18000",
+    "bytes": "16200000",
+    "invalid": "false",
+    "action": "drop",
+    "in-interface-list": "WAN"
+   },
+   {
+    ".id": "*64",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "home: everywhere",
+    "packets": "98000",
+    "bytes": "88200000",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface": "bridge_main"
+   },
+   {
+    ".id": "*65",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "out: not into the provider's network",
+    "packets": "42",
+    "bytes": "37800",
+    "invalid": "false",
+    "action": "drop",
+    "in-interface-list": "SEGMENTS",
+    "out-interface-list": "WAN",
+    "dst-address": "192.168.1.0/24"
+   },
+   {
+    ".id": "*66",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "all networks: internet",
+    "packets": "410000",
+    "bytes": "369000000",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface-list": "SEGMENTS",
+    "out-interface-list": "WAN"
+   },
+   {
+    ".id": "*67",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "guests: the NAS's web apps",
+    "packets": "2300",
+    "bytes": "2070000",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface": "vlan10_guests",
+    "out-interface": "vlan20_nas",
+    "dst-address": "192.168.20.10",
+    "protocol": "tcp",
+    "dst-port": "443"
+   },
+   {
+    ".id": "*68",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "guests: the old iPad to Synology Photos",
+    "packets": "870",
+    "bytes": "783000",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface": "vlan10_guests",
+    "out-interface": "vlan20_nas",
+    "src-address": "192.168.10.23",
+    "dst-address": "192.168.20.10",
+    "protocol": "tcp",
+    "dst-port": "5001"
+   },
+   {
+    ".id": "*69",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "NAS: Home Assistant drives the devices",
+    "packets": "15000",
+    "bytes": "13500000",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface": "vlan20_nas",
+    "out-interface": "vlan30_iot"
+   },
+   {
+    ".id": "*6A",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "IoT: to Home Assistant",
+    "packets": "0",
+    "bytes": "0",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface": "vlan30_iot",
+    "out-interface": "vlan20_nas",
+    "dst-address": "192.168.20.40",
+    "protocol": "tcp",
+    "dst-port": "8123"
+   },
+   {
+    ".id": "*6B",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "VPN: home",
+    "packets": "640",
+    "bytes": "576000",
+    "invalid": "false",
+    "action": "accept",
+    "in-interface": "back-to-home-vpn",
+    "out-interface": "bridge_main"
+   },
+   {
+    ".id": "*6C",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "forward",
+    "comment": "between networks, everything else: no",
+    "packets": "5200",
+    "bytes": "4680000",
+    "invalid": "false",
+    "action": "drop",
+    "in-interface-list": "SEGMENTS",
+    "out-interface-list": "SEGMENTS"
+   }
+  ],
+  "ip/firewall/nat": [
+   {
+    ".id": "*6D",
+    "disabled": "false",
+    "dynamic": "false",
+    "chain": "srcnat",
+    "action": "masquerade",
+    "comment": "defconf: masquerade",
+    "packets": "52000",
+    "bytes": "31000000",
+    "invalid": "false",
+    "out-interface-list": "WAN"
+   }
+  ],
+  "ip/firewall/address-list": [],
+  "ip/firewall/raw": [],
+  "ip/firewall/mangle": [],
+  "ip/ipsec/policy": [],
+  "ip/firewall/connection": [
+   {
+    ".id": "*77",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.88.10:50001",
+    "dst-address": "160.79.104.10:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*78",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.88.10:50002",
+    "dst-address": "160.79.104.10:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*79",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.88.10:50003",
+    "dst-address": "160.79.104.10:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*7A",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.88.10:50004",
+    "dst-address": "140.82.121.4:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*7B",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.88.14:50005",
+    "dst-address": "45.57.90.1:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*7C",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.88.14:50006",
+    "dst-address": "45.57.90.1:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*7D",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.88.12:50007",
+    "dst-address": "142.250.74.110:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*7E",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.88.12:50008",
+    "dst-address": "142.250.74.110:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*7F",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.88.13:50009",
+    "dst-address": "35.186.224.25:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*80",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.10.21:50010",
+    "dst-address": "142.250.74.110:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*81",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.10.22:50011",
+    "dst-address": "192.168.20.10:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*82",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.10.23:50012",
+    "dst-address": "192.168.20.10:5001",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*83",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.20.40:50013",
+    "dst-address": "192.168.30.23:80",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*84",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.20.40:50014",
+    "dst-address": "192.168.30.21:554",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*85",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.20.10:50015",
+    "dst-address": "140.82.121.4:443",
+    "tcp-state": "established"
+   },
+   {
+    ".id": "*86",
+    "disabled": "false",
+    "dynamic": "false",
+    "protocol": "tcp",
+    "src-address": "192.168.216.2:50016",
+    "dst-address": "192.168.88.10:22",
+    "tcp-state": "established"
+   }
+  ]
+ },
+ "missing": {}
+}

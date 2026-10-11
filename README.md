@@ -7,6 +7,29 @@ The field is the whole network. A fenced yard is an isolated subnet. Houses in i
 Roads are who may open a connection to whom, and every road between subnets goes through the
 router in the middle.
 
+## Screenshots
+
+A made-up home network — Home, Guests, a NAS network, IoT, the VPN, and the provider's router
+beyond the gateway — drawn by the map. Nothing in it is anybody's: see "Try it without a
+router" below.
+
+![The whole map: subnets as fenced yards, devices as houses, roads through the router, carts for live connections](docs/screenshots/map.png)
+
+Through a device's eyes — a guest's old iPad: fog over everything it may not reach, the NAS
+showing through on the two ports it may use, and its access in the scroll, line by line, with
+the exceptions under each place.
+
+![Through a device's eyes: fog where it may not go, its lines of access in the scroll](docs/screenshots/device.png)
+
+Through a whole subnet's eyes — the guests: the sign at their gate names what the road to the
+NAS lets through, and what one of their devices has on its own stands under its name.
+
+![Through a subnet's eyes: the sign at its gate, its own and its devices' exceptions](docs/screenshots/subnet.png)
+
+The same map in the dark theme.
+
+![The dark theme](docs/screenshots/dark.png)
+
 ## What the map shows
 
 | On the map | In the network |
@@ -500,8 +523,23 @@ python3 tools/make_fixture.py
 ```
 
 In `fixtures/snapshot.json` the MAC addresses, device names and captions are invented. Network
-addresses, rules and counters are real: the tests rest on them. People's names are removed by
-the list at the top of `tools/make_fixture.py`, which can be added to.
+addresses, rules and counters are real: the tests rest on them. People's names are taken out of
+the rules' comments by the list in `data/people.txt`, one name a line, which stays out of git.
 
 After changing the dictionaries, run the suite: `tests/test_tongue.py` will say which key is
 missing and from which language.
+
+### Try it without a router
+
+`demo/` is a made-up network: a router's snapshot, the names and kinds of its devices, the
+NAS's containers and DSM's reverse proxy. `tools/make_demo.py` writes it. The map writes into
+its data folder as it runs, so give it a copy:
+
+```bash
+cp -r demo /tmp/lan-map-demo
+LAN_MAP_DATA_DIR=/tmp/lan-map-demo LAN_MAP_SHOW_NETWORKS=127.0.0.0/8 LAN_MAP_ROUTER_HOST=127.0.0.1 python3 -m lan_map
+```
+
+The screenshots above are taken from it by `node tools/screenshots.mjs`: the map on a copy of
+`demo/`, a headless Chrome, and the DevTools protocol over Node's own WebSocket — nothing to
+install. `CHROME=` points at another Chrome, `LAN_MAP_PYTHON=` at Python 3.14.

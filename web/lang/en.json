@@ -773,7 +773,7 @@
  "watchers.locks-you-out": "after this the map will not open from {keeper} — leave your own network on the list",
  "watchers.not-a-network": "«{text}» is not a network",
  "watchers.not-a-string": "a network is given as a string",
- "watchers.title": "Who sees the map (Lab reaches the NAS under the router's address, so the Home tick is enough for it):",
+ "watchers.title": "Who sees the map:",
  "watchers.too-many": "too many networks",
  "watchers.who-chooses": "could not tell which address is choosing"
 }

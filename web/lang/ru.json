@@ -773,7 +773,7 @@
  "watchers.locks-you-out": "с адреса {keeper} карта после этого не откроется — оставьте свою сеть в списке",
  "watchers.not-a-network": "«{text}» — не сеть",
  "watchers.not-a-string": "сеть задаётся строкой",
- "watchers.title": "Кому видно карту (Lab приходит на NAS под адресом роутера, поэтому ему хватает галочки Home):",
+ "watchers.title": "Кому видно карту:",
  "watchers.too-many": "слишком много сетей",
  "watchers.who-chooses": "не понял, с какого адреса выбирают"
 }

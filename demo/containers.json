@@ -1,0 +1,238 @@
+{
+ "taken": "2026-10-11T09:57:01+00:00",
+ "every": 0,
+ "host": {
+  "name": "nas",
+  "os": "Synology NAS (containerized)",
+  "docker": "24.0.2"
+ },
+ "apps": "/volume1/docker",
+ "folders": [
+  {
+   "folder": "home-assistant",
+   "compose": "compose.yaml"
+  },
+  {
+   "folder": "immich",
+   "compose": "compose.yaml"
+  },
+  {
+   "folder": "jellyfin",
+   "compose": "compose.yaml"
+  },
+  {
+   "folder": "lan-map",
+   "compose": "compose.yaml"
+  },
+  {
+   "folder": "vaultwarden",
+   "compose": "compose.yaml"
+  }
+ ],
+ "containers": [
+  {
+   "name": "homeassistant",
+   "project": "home-assistant",
+   "service": "homeassistant",
+   "folder": "/volume1/docker/home-assistant",
+   "image": "ghcr.io/home-assistant/home-assistant:2026.10",
+   "state": "running",
+   "health": "healthy",
+   "started": "2026-10-01T08:00:00Z",
+   "finished": "",
+   "exit_code": 0,
+   "restarts": 0,
+   "network": "host",
+   "ports": [],
+   "host_ports": [],
+   "served": "ha.lan.example"
+  },
+  {
+   "name": "immich-postgres",
+   "project": "immich",
+   "service": "immich-postgres",
+   "folder": "/volume1/docker/immich",
+   "image": "ghcr.io/immich-app/postgres:16",
+   "state": "running",
+   "health": "healthy",
+   "started": "2026-10-01T08:00:00Z",
+   "finished": "",
+   "exit_code": 0,
+   "restarts": 0,
+   "network": "bridge",
+   "ports": [],
+   "host_ports": [],
+   "served": ""
+  },
+  {
+   "name": "immich-server",
+   "project": "immich",
+   "service": "immich-server",
+   "folder": "/volume1/docker/immich",
+   "image": "ghcr.io/immich-app/immich-server:v2.1",
+   "state": "running",
+   "health": "healthy",
+   "started": "2026-10-01T08:00:00Z",
+   "finished": "",
+   "exit_code": 0,
+   "restarts": 0,
+   "network": "bridge",
+   "ports": [
+    "2283→2283/tcp"
+   ],
+   "host_ports": [
+    2283
+   ],
+   "served": "photos.lan.example"
+  },
+  {
+   "name": "jellyfin",
+   "project": "jellyfin",
+   "service": "jellyfin",
+   "folder": "/volume1/docker/jellyfin",
+   "image": "jellyfin/jellyfin:10.11",
+   "state": "running",
+   "health": "healthy",
+   "started": "2026-10-01T08:00:00Z",
+   "finished": "",
+   "exit_code": 0,
+   "restarts": 0,
+   "network": "bridge",
+   "ports": [
+    "8096→8096/tcp"
+   ],
+   "host_ports": [
+    8096
+   ],
+   "served": "media.lan.example"
+  },
+  {
+   "name": "lan-map",
+   "project": "lan-map",
+   "service": "lan-map",
+   "folder": "/volume1/docker/lan-map",
+   "image": "lan-map:latest",
+   "state": "running",
+   "health": "healthy",
+   "started": "2026-10-01T08:00:00Z",
+   "finished": "",
+   "exit_code": 0,
+   "restarts": 0,
+   "network": "host",
+   "ports": [],
+   "host_ports": [],
+   "served": "map.lan.example"
+  },
+  {
+   "name": "lan-map-containers",
+   "project": "lan-map",
+   "service": "lan-map-containers",
+   "folder": "/volume1/docker/lan-map",
+   "image": "lan-map:latest",
+   "state": "running",
+   "health": "",
+   "started": "2026-10-01T08:00:00Z",
+   "finished": "",
+   "exit_code": 0,
+   "restarts": 0,
+   "network": "none",
+   "ports": [],
+   "host_ports": [],
+   "served": ""
+  },
+  {
+   "name": "vaultwarden",
+   "project": "vaultwarden",
+   "service": "vaultwarden",
+   "folder": "/volume1/docker/vaultwarden",
+   "image": "vaultwarden/server:1.37.3",
+   "state": "running",
+   "health": "healthy",
+   "started": "2026-10-01T08:00:00Z",
+   "finished": "",
+   "exit_code": 0,
+   "restarts": 0,
+   "network": "bridge",
+   "ports": [
+    "127.0.0.1:18100→80/tcp"
+   ],
+   "host_ports": [
+    18100
+   ],
+   "served": "vault.lan.example"
+  }
+ ],
+ "gate": {
+  "missing": "",
+  "doors": [
+   {
+    "name": "ha.lan.example",
+    "ports": [
+     443
+    ],
+    "to": "http://127.0.0.1:8123",
+    "profile": null
+   },
+   {
+    "name": "map.lan.example",
+    "ports": [
+     443
+    ],
+    "to": "http://127.0.0.1:18091",
+    "profile": [
+     [
+      "allow",
+      "192.168.88.0/24"
+     ],
+     [
+      "deny",
+      "all"
+     ]
+    ]
+   },
+   {
+    "name": "media.lan.example",
+    "ports": [
+     443
+    ],
+    "to": "http://127.0.0.1:8096",
+    "profile": null
+   },
+   {
+    "name": "photos.lan.example",
+    "ports": [
+     443
+    ],
+    "to": "http://127.0.0.1:2283",
+    "profile": null
+   },
+   {
+    "name": "vault.lan.example",
+    "ports": [
+     443
+    ],
+    "to": "http://127.0.0.1:18100",
+    "profile": [
+     [
+      "allow",
+      "192.168.88.0/24"
+     ],
+     [
+      "allow",
+      "192.168.10.0/24"
+     ],
+     [
+      "deny",
+      "all"
+     ]
+    ]
+   }
+  ],
+  "firewall": {
+   "missing": "",
+   "on": false,
+   "profile": "default",
+   "rules": 0
+  }
+ }
+}

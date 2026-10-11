@@ -1,0 +1,98 @@
+{
+ "segments": {
+  "bridge_main": {
+   "title": "Home",
+   "trusted": true
+  },
+  "vlan10_guests": {
+   "title": "Guests"
+  },
+  "vlan20_nas": {
+   "title": "NAS"
+  },
+  "vlan30_iot": {
+   "title": "IoT"
+  },
+  "back-to-home-vpn": {
+   "title": "VPN"
+  }
+ },
+ "devices": {
+  "02:00:00:00:01:00": {
+   "name": "MacBook",
+   "kind": "laptop"
+  },
+  "02:00:00:00:01:01": {
+   "name": "Desktop"
+  },
+  "02:00:00:00:01:02": {
+   "name": "Phone",
+   "kind": "iphone"
+  },
+  "02:00:00:00:01:03": {
+   "name": "Tablet",
+   "kind": "tablet"
+  },
+  "02:00:00:00:01:04": {
+   "name": "Smart TV",
+   "kind": "tv"
+  },
+  "02:00:00:00:01:05": {
+   "name": "Access point",
+   "kind": "wifi"
+  },
+  "02:00:00:00:01:06": {
+   "name": "Guest phone",
+   "kind": "phone"
+  },
+  "02:00:00:00:01:07": {
+   "name": "Guest laptop",
+   "kind": "laptop"
+  },
+  "02:00:00:00:01:08": {
+   "name": "Old iPad",
+   "kind": "tablet"
+  },
+  "02:00:00:00:01:09": {
+   "name": "NAS",
+   "kind": "nas"
+  },
+  "02:00:00:00:01:0A": {
+   "name": "UPS",
+   "kind": "ups"
+  },
+  "02:00:00:00:01:0B": {
+   "name": "Home Assistant",
+   "kind": "smart-home"
+  },
+  "02:00:00:00:01:0C": {
+   "name": "Camera",
+   "kind": "camera"
+  },
+  "02:00:00:00:01:0D": {
+   "name": "Printer",
+   "kind": "printer"
+  },
+  "02:00:00:00:01:0E": {
+   "name": "Thermostat",
+   "kind": "thermostat"
+  },
+  "02:00:00:00:01:0F": {
+   "name": "Robot vacuum",
+   "kind": "vacuum"
+  },
+  "02:00:00:00:01:10": {
+   "name": "Smart plug",
+   "kind": "socket"
+  },
+  "02:00:00:00:01:11": {
+   "name": "Speaker",
+   "kind": "speaker"
+  },
+  "02:00:00:00:03:84": {
+   "name": "Provider's router",
+   "kind": "router"
+  }
+ },
+ "same": []
+}
