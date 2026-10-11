@@ -30,6 +30,11 @@ class PayloadTest(unittest.TestCase):
             with self.subTest(part["where"]):
                 self.assertTrue(part["by"], "a piece shut by nobody")
 
+    def test_the_yard_beyond_the_gate_is_marked_and_called_so(self):
+        beyond = [segment for segment in self.payload["segments"] if segment["outside"]]
+        self.assertEqual([(one["network"], one["title"]) for one in beyond], [("192.168.0.0/24", "beyond the gateway")])
+        self.assertTrue(all(not segment["outside"] for segment in self.payload["segments"] if segment is not beyond[0]))
+
     def test_each_castle_gets_its_own_colour(self):
         colours = [segment["colour"] for segment in self.payload["segments"]]
         self.assertEqual(len(set(colours)), len(colours))

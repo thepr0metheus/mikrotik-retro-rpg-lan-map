@@ -283,7 +283,7 @@ class ServerTest(unittest.TestCase):
         self.with_snapshot()
         status, answer = self.site.ask("GET", "/api/specs")
         self.assertEqual(status, 200)
-        self.assertEqual(len(answer["devices"]), 47)
+        self.assertEqual(len(answer["devices"]), 48)
         self.assertEqual([field["key"] for field in answer["fields"]][:3], ["model", "os", "os_version"])
         self.assertEqual((answer["name_most"], answer["devices"][0]["specs"]), (48, None))
 

@@ -480,6 +480,10 @@ class _Builder:
     def build(self) -> Roads:
         roads = []
         for segment in self.network.segments:
+            # The yard beyond the gate is a place to go to, never a place roads start from: who
+            # may call out of it is decided by its own router, not by ours.
+            if segment.outside:
+                continue
             for other in self.network.segments:
                 if segment.key != other.key:
                     roads.append(self.road(self.forward, segment.key, other.key, self.journey(segment, other)))

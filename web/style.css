@@ -172,6 +172,9 @@ main.single section { margin-bottom: 8px; }
 
 /* Cursors and layers by class: the page writes no styles into the markup, bar the hint's place. */
 .held { cursor: grab; }
+/* A castle's yard is clicked for its scroll; only its name board is held and moved. */
+.castle { cursor: pointer; }
+.castle .held { cursor: grab; }
 .lane { cursor: pointer; }
 .house { cursor: pointer; }
 /* The notice board, the signpost, the crates, the book and the robot: ways from the map into a

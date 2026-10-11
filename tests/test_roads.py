@@ -7,7 +7,7 @@ from lan_map.roads import ALL, INTERNET, MOST, PORTS, PUZZLE, ROUTER, SHUT, Road
 from lan_map.snapshot import Snapshot
 from lan_map.tongue import Tongue
 
-from .samples import HOME, LAB, MEMBERS, rule, snapshot
+from .samples import HOME, LAB, MEMBERS, address, rule, snapshot
 
 FIXTURE = Path(__file__).resolve().parent.parent / "fixtures" / "snapshot.json"
 LAB_KEY, HOME_KEY = "vlan20_lab", "bridge_main"
@@ -164,6 +164,23 @@ class PierTest(unittest.TestCase):
         self.assertEqual([(piece.where, [one.comment for one in piece.rules]) for piece in pier.shut],
                          [("10.0.0.0/8", ["ten"]), ("192.168.0.0/24", ["tp-link"])])
         self.assertEqual(pier.shut_to, "10.0.0.0/8, 192.168.0.0/24")
+
+    def test_the_yard_beyond_the_gate_is_reached_but_never_a_start(self):
+        """A private network behind the WAN port: home may go there, the lab may not, nobody's
+        road starts there, and the internet no longer counts it among the places it leaves out."""
+        taken = snapshot(**{"ip/address": [HOME, LAB, address("192.168.0.2/24", "ether5", "192.168.0.0")],
+                            "interface/list/member": MEMBERS,
+                            "ip/firewall/filter": [
+                                rule("accept", src_address="192.168.88.0/24", dst_address="192.168.0.0/24",
+                                     out_interface_list="WAN"),
+                                rule("drop", src_address="192.168.20.0/24", dst_address="192.168.0.0/24",
+                                     out_interface_list="WAN"),
+                                rule("accept", out_interface_list="WAN")]})
+        roads = Roads.of(taken, Network.of(taken, Atlas.empty()))
+        self.assertEqual([road for road in roads.roads if road.source == "ether5"], [])
+        self.assertEqual(roads.between(HOME_KEY, "ether5").width, ALL)
+        self.assertEqual(roads.between(LAB_KEY, "ether5").width, SHUT)
+        self.assertEqual(roads.between(LAB_KEY, INTERNET).width, ALL)
 
     def test_a_name_changed_on_the_way_is_said_out_loud(self):
         roads = world(nat=[{"chain": "srcnat", "action": "masquerade", "packets": "5",

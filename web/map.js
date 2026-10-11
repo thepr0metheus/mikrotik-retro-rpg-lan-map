@@ -223,7 +223,7 @@ class Castle {
     const box = this.box;
     // A castle's wall is its colour: castles stay apart even when the sign cannot be read.
     const wall = Castle.shade(this.segment.colour, 0.72);
-    const group = Svg.el('g', { class: 'castle held', 'data-move': this.segment.key });
+    const group = Svg.el('g', { class: 'castle' });
     group.append(
       Svg.el('rect', { x: box.x, y: box.y, width: box.width, height: box.height, fill: wall }),
       Svg.el('rect', {
@@ -238,7 +238,19 @@ class Castle {
         stroke: Look.BOARD, 'stroke-width': 3, 'stroke-dasharray': '8 6',
       }));
     }
-    group.append(page.board(this.place.x, box.y - 34, this.heading(), this.segment.colour));
+    // The yard beyond the gate: a fence of loose stones, since it is not ours.
+    if (this.segment.outside) {
+      group.append(Svg.el('rect', {
+        x: box.x, y: box.y, width: box.width, height: box.height, fill: 'none',
+        stroke: Look.STONE, 'stroke-width': 4, 'stroke-dasharray': '3 6',
+      }));
+    }
+    // A castle is moved by its name alone: the yard itself is clicked, and a click inside it
+    // must not turn into a move.
+    const name = page.board(this.place.x, box.y - 34, this.heading(), this.segment.colour);
+    name.setAttribute('data-move', this.segment.key);
+    name.classList.add('held');
+    group.append(name);
     group.addEventListener('pointerenter', () => page.hint.show(this.tell()));
     group.addEventListener('pointerleave', () => page.hint.hide());
     group.addEventListener('click', () => page.showSegment(this.segment.key));
@@ -781,18 +793,29 @@ class Scroll {
     const all = castle.all || castle.devices;
     // Online first: they are asked about more often, and the dark ones can wait their turn.
     const dwellers = [...all].sort((one, other) => Number(other.online) - Number(one.online));
+    // The yard beyond the gate is told as what it is: our address there, who is in charge, and
+    // that its rules are not ours — so it has no lines of access of its own to show.
+    const post = world.outpost || {};
+    const facts = segment.outside ? [
+      say('castle.network', { network: segment.network }),
+      say('castle.on-router', { key: segment.key }),
+      say('outpost.ours', { ours: segment.gateway }),
+      post.gate ? say('outpost.gate', { gate: post.gate }) : say('outpost.no-gate'),
+      say('castle.online', { here: castle.devices.length, all: castle.known }),
+    ] : [
+      say('castle.network', { network: segment.network })
+        + (segment.vlan ? `, VLAN ${segment.vlan}` : ''),
+      // This line earns its place only when the castle's name was invented on the map: if it
+      // already equals the interface name, repeating it takes room and says nothing.
+      ...(segment.title === segment.key ? [] : [say('castle.on-router', { key: segment.key })]),
+      say('castle.gateway', { gateway: segment.gateway }),
+      say(segment.temporary ? 'castle.temporary' : 'castle.permanent'),
+      say('castle.online', { here: castle.devices.length, all: castle.known }),
+    ];
     const blocks = [
       Scroll.words(say('castle.of', { title: segment.title })),
-      Scroll.list([
-        say('castle.network', { network: segment.network })
-          + (segment.vlan ? `, VLAN ${segment.vlan}` : ''),
-        // This line earns its place only when the castle's name was invented on the map: if it
-        // already equals the interface name, repeating it takes room and says nothing.
-        ...(segment.title === segment.key ? [] : [say('castle.on-router', { key: segment.key })]),
-        say('castle.gateway', { gateway: segment.gateway }),
-        say(segment.temporary ? 'castle.temporary' : 'castle.permanent'),
-        say('castle.online', { here: castle.devices.length, all: castle.known }),
-      ]),
+      Scroll.list(facts),
+      ...(segment.outside ? [Scroll.words(say('outpost.not-ours'), 'quiet')] : []),
       ...(reach.length ? [Scroll.words(say('device.reach'), 'quiet'), Scroll.reach(reach)] : []),
       ...Scroll.gate(notes),
     ];
@@ -858,6 +881,7 @@ class Scroll {
     });
     const blocks = [Scroll.words(device.name || say('device.nameless')), Scroll.marked(seats)];
     if (reach) blocks.push(Scroll.words(say('device.reach'), 'quiet'), Scroll.reach(reach));
+    else if (page && page.beyondOnly(device)) blocks.push(Scroll.words(say('outpost.not-ours'), 'quiet'));
     if (page) {
       const walks = page.walks(device);
       if (walks.length) {
@@ -865,10 +889,12 @@ class Scroll {
       } else if (device.online) {
         blocks.push(Scroll.words(say('device.walks-nowhere'), 'quiet'));
       }
-      const doors = document.createElement('div');
-      doors.className = 'doors';
-      doors.append(Scroll.words(say('doors.knocking'), 'quiet'));
-      blocks.push(Scroll.words(say('doors.title'), 'quiet'), doors);
+      if (!page.beyondOnly(device)) {
+        const doors = document.createElement('div');
+        doors.className = 'doors';
+        doors.append(Scroll.words(say('doors.knocking'), 'quiet'));
+        blocks.push(Scroll.words(say('doors.title'), 'quiet'), doors);
+      }
       blocks.push(page.tools(device));
       blocks.push(Scroll.words(say('device.name'), 'quiet'), page.naming(device));
       blocks.push(Scroll.words(say('device.kind'), 'quiet'), page.kinds(device));
@@ -1170,7 +1196,7 @@ class MapPage extends Page {
     for (const segment of this.world.segments.filter(empty)) {
       groups.island.append(this.tunnel(segment, town));
     }
-    groups.island.append(this.pier(town), this.town(town), ...this.outpost());
+    groups.island.append(this.pier(town), this.town(town));
     const bridges = Bridges.find(corridors);
     corridors.forEach((corridor, order) => {
       groups.roads.append(Roadwork.bridges(bridges.filter((mark) => mark.over === order)));
@@ -1926,7 +1952,7 @@ class MapPage extends Page {
     const sea = verdicts.get(this.world.ends.internet);
     covers.push(...this.cover({ x: pier.x - 70, y: pier.y - 46, width: 300, height: 92 }, sea, null));
     // The way out still says what it is when it is dark: its words are drawn again, above.
-    if (!sea || !['home', 'open'].includes(sea.state)) covers.push(this.pierWords(), ...this.outpostBoard());
+    if (!sea || !['home', 'open'].includes(sea.state)) covers.push(this.pierWords());
     return covers;
   }
 
@@ -2067,7 +2093,7 @@ class MapPage extends Page {
       this.draw();
       this.describe(device, null);
     });
-    else put(say('tool.where-it-may-go'), () => this.showDevice(device));
+    else if (!this.beyondOnly(device)) put(say('tool.where-it-may-go'), () => this.showDevice(device));
     put(say(device.pinned ? 'tool.unpin' : 'tool.pin'),
         () => this.remember(device, { pinned: !device.pinned }), device.pinned);
     put(say(device.hidden ? 'tool.unhide' : 'tool.hide'),
@@ -2574,80 +2600,13 @@ class MapPage extends Page {
       .filter(Boolean).join('\n');
   }
 
-  /**
-   * The outpost beyond the gate: the network the house goes out through, when that one is
-   * private too. It is deliberately not drawn as a castle — the rules there are not ours, and
-   * we do not know who lives in it.
-   */
-  outpost() {
-    const post = this.world.outpost;
-    if (!post) return [];
-    const { x, y } = this.outpostSpot();
-    const group = Svg.el('g', { class: 'outpost' });
-    group.append(
-      Svg.el('rect', { x, y, width: 44, height: 26, fill: Look.STONE }),
-      Svg.el('rect', { x: x + 6, y: y + 8, width: 32, height: 18, fill: '#6f747c' }),
-      Svg.el('rect', { x: x + 17, y: y + 14, width: 10, height: 12, fill: Look.DARK }),
-      Svg.el('rect', { x, y: y - 5, width: 8, height: 5, fill: Look.STONE }),
-      Svg.el('rect', { x: x + 18, y: y - 5, width: 8, height: 5, fill: Look.STONE }),
-      Svg.el('rect', { x: x + 36, y: y - 5, width: 8, height: 5, fill: Look.STONE }),
-      ...this.outpostBoard(),
-    );
-    group.addEventListener('pointerenter', () => this.hint.show(this.aboutOutpost()));
-    group.addEventListener('pointerleave', () => this.hint.hide());
-    group.addEventListener('click', () => this.tellAboutOutpost());
-    return [group];
-  }
-
-  /** Where the outpost stands: beside the pier, not under it — under it the canvas ends. */
-  outpostSpot() {
-    const at = this.places.of(this.world.ends.internet);
-    return { x: at.x + 42, y: at.y - 26 };
-  }
-
-  /** The outpost's board, "beyond the gateway · 192.168.0.x": none when there is no outpost. */
-  outpostBoard() {
-    const post = this.world.outpost;
-    if (!post) return [];
-    const { x, y } = this.outpostSpot();
-    return [this.board(x + 22, y + 42, `${say('outpost.title')} · ${Castle.shortNet(post.network)}`, Look.STONE)];
-  }
-
-  aboutOutpost() {
-    const post = this.world.outpost;
-    return [say('outpost.another-network', { network: post.network }),
-            say('outpost.ours', { ours: post.ours }),
-            post.gate ? say('outpost.gate', { gate: post.gate }) : say('outpost.no-gate'),
-            say('outpost.neighbours', { count: post.neighbours.length })].join('\n');
-  }
-
-  tellAboutOutpost() {
-    const post = this.world.outpost;
-    this.scroll.put(say('scroll.title'),
-      Scroll.words(say('outpost.head')),
-      Scroll.list([
-        say('outpost.network', { network: post.network, interface: post.interface }),
-        say('outpost.ours', { ours: post.ours }),
-        post.gate ? say('outpost.gate', { gate: post.gate }) : say('outpost.no-gate'),
-      ]),
-      Scroll.words(say('outpost.not-ours'), 'quiet'),
-      Scroll.list(post.neighbours.length
-        ? post.neighbours.map((one) => `${one.ip} · ${one.mac}`)
-        : [say('outpost.none-seen')]));
-  }
-
+  /** The pier says what it is and where the rest is told: each network's own lines of access. */
   aboutSea() {
-    return [say('pier.head'), ...this.world.roads
-      .filter((road) => road.target === this.world.ends.internet)
-      .map((road) => `${this.titleOf(road.source)}: ${say(`road.width.${road.width}`)}`
-        + `${road.shutTo ? ` ${say('road.but', { where: road.shutTo })}` : ''}`)].join('\n');
+    return [say('pier.head'), say('pier.see-access')].join('\n');
   }
 
   tellAboutSea() {
-    const roads = this.world.roads.filter((road) => road.target === this.world.ends.internet);
-    this.scroll.put(say('scroll.title'), Scroll.words(say('pier.head')), Scroll.list(roads.map(
-      (road) => `${this.titleOf(road.source)}: ${say(`road.width.${road.width}`)}`
-        + `${road.shutTo ? ` — ${say('road.but', { where: road.shutTo })}` : ''}`)));
+    this.scroll.put(say('scroll.title'), Scroll.words(say('pier.head')), Scroll.words(say('pier.see-access'), 'quiet'));
   }
 
   tellAboutRouter() {
@@ -2662,10 +2621,19 @@ class MapPage extends Page {
    * That is what a map leads one to expect: poke a dweller and see where it goes.
    */
   showDevice(device) {
-    this.eyes = device.key;
+    // A dweller of the yard beyond the gate has no eyes the map could lend: what it may reach is
+    // decided by a router that is not ours.
+    const beyond = this.beyondOnly(device);
+    this.eyes = beyond ? '' : device.key;
     this.watching = '';
     this.draw();
-    this.describe(device, this.reach(device));
+    this.describe(device, beyond ? null : this.reach(device));
+  }
+
+  /** Whether a device lives only in the yard beyond the gate. */
+  beyondOnly(device) {
+    const outside = new Set(this.world.segments.filter((one) => one.outside).map((one) => one.key));
+    return device.homes.length > 0 && device.homes.every((home) => outside.has(home));
   }
 
   /**
@@ -2673,13 +2641,15 @@ class MapPage extends Page {
    * subnet: what none of its devices may reach goes dark, and its road signs come out.
    */
   showSegment(key) {
-    this.watching = key;
+    // The yard beyond the gate is looked at, not looked through: its rules are not ours.
+    const castle = this.castles.find((one) => one.segment.key === key);
+    const beyond = Boolean(castle && castle.segment.outside);
+    this.watching = beyond ? '' : key;
     this.eyes = '';
     this.draw();
-    const castle = this.castles.find((one) => one.segment.key === key);
     if (castle) {
       this.scroll.castle(castle, this.world, (one) => this.titleOf(one), this.gateNotes(key),
-                         this.reachOf({ segment: key }));
+                         beyond ? [] : this.reachOf({ segment: key }));
     }
   }
 
@@ -2687,7 +2657,8 @@ class MapPage extends Page {
   describe(device, reach) {
     this.shown = device.key;
     this.scroll.device(device, this, reach);
-    this.knock(device);
+    // Beyond the gate is not our network: the map does not knock at doors there.
+    if (!this.beyondOnly(device)) this.knock(device);
   }
 
   /**
@@ -3045,7 +3016,7 @@ class MapPage extends Page {
       return;
     }
     const shown = new Set(settings.show);
-    const rows = this.world.segments.map((segment) => {
+    const rows = this.world.segments.filter((segment) => !segment.outside).map((segment) => {
       const label = document.createElement('label');
       const tick = document.createElement('input');
       tick.type = 'checkbox';
@@ -3284,9 +3255,9 @@ class MapPage extends Page {
       }
       const held = event.target.closest('[data-move]');
       // Grab a place and pull: on empty grass with the left button, with the middle even by a
-      // castle. A house, a road and a cart are not grass: they are clicked, and a click must
-      // not be eaten.
-      const busy = event.target.closest('[data-move],[data-grip],.house,.lane,.cart');
+      // castle. A house, a road, a cart and a castle's yard are not grass: they are clicked,
+      // and a click must not be eaten.
+      const busy = event.target.closest('[data-move],[data-grip],.house,.lane,.cart,.castle');
       if (event.button === 1 || (!busy && event.button === 0)) {
         this.panning = { from: Svg.point(this.map, event), eye: { ...this.eye } };
         this.map.classList.add('held');

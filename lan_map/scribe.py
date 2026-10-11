@@ -92,9 +92,11 @@ class Scribe:
     def networks(self) -> list:
         # A name may be the map's own, or it may be the interface's name on the router. The
         # second column earns its place only in the first case: two equal columns explain nothing.
-        renamed = any(segment["title"] != segment["key"] for segment in self.payload["segments"])
+        # The yard beyond the gate has a section of its own, below: its rules are not ours.
+        ours = [segment for segment in self.payload["segments"] if not segment.get("outside")]
+        renamed = any(segment["title"] != segment["key"] for segment in ours)
         rows = []
-        for segment in self.payload["segments"]:
+        for segment in ours:
             here = [device for device in self.living(segment["key"]) if device["online"]]
             row = [segment["title"]] + ([segment["key"]] if renamed else [])
             rows.append(row + [segment["network"],
@@ -172,6 +174,8 @@ class Scribe:
     def devices(self) -> list:
         lines = ["## " + self.say("md.devices.head"), "", self.say("md.devices.intro"), ""]
         for segment in self.payload["segments"]:
+            if segment.get("outside"):
+                continue     # told in the outpost's own section, with what the router saw there
             found = self.living(segment["key"])
             if not found:
                 continue

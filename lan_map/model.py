@@ -116,6 +116,9 @@ class Segment:
     temporary: bool
     #: The interface lists this network belongs to: the firewall rules look at those.
     lists: tuple
+    #: The network beyond the gate, when it is private: a yard on the map like the others, but not
+    #: ours — its rules are someone else's, and only those the router itself has met live in it.
+    outside: bool = False
 
     def holds(self, ip: str) -> bool:
         try:
@@ -236,6 +239,13 @@ class _Builder:
                     network=f"{row['network']}/{prefix}", gateway=address,
                     vlan=vlans.get(interface), trusted=self.atlas.trusted(interface),
                     temporary=row.get("dynamic") == "true", lists=tuple(lists.get(interface, ()))))
+            beyond = self.beyond()
+            if beyond:
+                interface, network, address = beyond
+                found.append(Segment(
+                    key=interface, title=self.atlas.title(interface), network=network, gateway=address,
+                    vlan=None, trusted=False, temporary=False, lists=tuple(lists.get(interface, ())),
+                    outside=True))
             self._segments = tuple(found)
         return self._segments
 
@@ -309,11 +319,16 @@ class _Builder:
                    LEASE, True, row.get("last-seen", ""), calls)
         online_macs = {row.get("mac-address", "").upper() for row in self.wifi()}
         outside = self.wan_interfaces()
+        beyond = self.beyond()
         for row in self.rows("ip/arp"):
             ip = row.get("address", "")
             mac = (row.get("mac-address") or "").upper()
-            if not ip or row.get("interface", "") in outside:
-                continue  # a neighbour on the provider's side is no device of this house
+            if not ip:
+                continue
+            # A neighbour on the provider's side is no device of this house — unless the network
+            # out there is a private one: then it is the yard beyond the gate, and lives in it.
+            if row.get("interface", "") in outside and not (beyond and row.get("interface") == beyond[0]):
+                continue
             if row.get("status") in ("failed", "incomplete"):
                 continue  # the router asked and nobody answered: a record of a question, not a dweller
             # "stale" means the router saw it once and has not asked again since. By itself
@@ -376,10 +391,10 @@ class _Builder:
         return shown
 
     # --- what lies beyond the gate ----------------------------------------------------------------
-    def outpost(self):
-        """The network the house goes out through — if that one is private too."""
+    def beyond(self):
+        """(interface, network, our address) of the network the house goes out through — when that
+        one is private too. None when the real internet starts at the gate."""
         wan = self.wan_interfaces()
-        mine = None
         for row in self.rows("ip/address"):
             interface = row.get("actual-interface") or row["interface"]
             if interface not in wan or row.get("disabled") == "true":
@@ -387,11 +402,16 @@ class _Builder:
             address, _, prefix = row["address"].partition("/")
             try:
                 if not ip_address(address).is_private:
-                    continue          # the real internet is out there: no outpost to show
+                    continue          # the real internet is out there: nothing to show
             except ValueError:
                 continue
-            mine = (interface, f"{row['network']}/{prefix}", address)
-            break
+            return interface, f"{row['network']}/{prefix}", address
+        return None
+
+    def outpost(self):
+        """The network the house goes out through — if that one is private too."""
+        wan = self.wan_interfaces()
+        mine = self.beyond()
         if not mine:
             return None
         interface, network, ours = mine

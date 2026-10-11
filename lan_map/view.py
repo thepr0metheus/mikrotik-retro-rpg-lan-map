@@ -38,6 +38,8 @@ class View:
 
     #: Castle colours in order. The atlas may name its own.
     COLOURS: ClassVar[tuple] = ("#1d9e75", "#7f77dd", "#f0a020", "#3f6fb5", "#d4537e", "#639922")
+    #: The yard beyond the gate is grey stone: not ours, and the colours are for our own.
+    OUTSIDE_COLOUR: ClassVar[str] = "#8b9099"
     #: How many far ends the signpost by the pier names: one plank each.
     SIGNPOST: ClassVar[int] = 3
 
@@ -118,10 +120,15 @@ class View:
 
     def segment(self, segment, order: int) -> dict:
         named = self.atlas.segments.get(segment.key, {})
-        return {"key": segment.key, "title": segment.title, "network": segment.network,
+        # The yard beyond the gate is called so until the atlas names it: its interface name says
+        # nothing to a reader.
+        title = (self.tongue.say("outpost.title") if segment.outside and segment.title == segment.key
+                 else segment.title)
+        colour = self.OUTSIDE_COLOUR if segment.outside else self.COLOURS[order % len(self.COLOURS)]
+        return {"key": segment.key, "title": title, "network": segment.network,
                 "gateway": segment.gateway, "vlan": segment.vlan, "trusted": segment.trusted,
-                "temporary": segment.temporary,
-                "colour": named.get("colour", self.COLOURS[order % len(self.COLOURS)])}
+                "temporary": segment.temporary, "outside": segment.outside,
+                "colour": named.get("colour", colour)}
 
     def device(self, device) -> dict:
         known = self.atlas.device(device.key, *(seat.ip for seat in device.seats))

@@ -11,13 +11,18 @@ FIXTURE = Path(__file__).resolve().parent.parent / "fixtures" / "snapshot.json"
 
 
 class SegmentsTest(unittest.TestCase):
-    def test_a_castle_per_network_except_the_one_facing_outside(self):
+    def test_a_castle_per_network_and_the_private_one_outside_is_a_yard_not_ours(self):
+        """The network beyond the gate is drawn as a yard when it is private, marked as not ours;
+        its address handed out by DHCP does not make it a network that comes and goes."""
         net = Network.of(snapshot(**{
             "ip/address": [HOME, address("192.168.0.2/24", "ether5", "192.168.0.0", dynamic="true")],
             "interface/list/member": [{"list": "WAN", "interface": "ether5"}, {"list": "LAN", "interface": "bridge_main"}],
         }), Atlas.empty())
-        self.assertEqual([segment.key for segment in net.segments], ["bridge_main"])
+        self.assertEqual([(segment.key, segment.outside) for segment in net.segments],
+                         [("bridge_main", False), ("ether5", True)])
         self.assertEqual(net.segments[0].lists, ("LAN",))
+        beyond = net.segments[1]
+        self.assertEqual((beyond.network, beyond.gateway, beyond.temporary), ("192.168.0.0/24", "192.168.0.2", False))
 
     def test_vlan_and_a_castle_that_appears_with_the_vpn(self):
         net = Network.of(snapshot(**{
@@ -175,23 +180,28 @@ class OutpostTest(unittest.TestCase):
                          ("192.168.0.0/24", "192.168.0.2", "192.168.0.1"))
         self.assertEqual(post.neighbours, (("192.168.0.1", "02:00:00:00:01:01"),))
 
-    def test_the_neighbour_behind_the_gate_is_not_a_dweller(self):
-        """A neighbour on the provider's side does not move into a castle: not our network."""
+    def test_the_neighbour_behind_a_private_gate_lives_in_the_yard_beyond_it(self):
+        """The owner's own router stands out there: the yard beyond the gate shows it as a house."""
         net = Network.of(snapshot(**{
             "ip/address": [HOME, address("192.168.0.2/24", "ether5", "192.168.0.0", dynamic="true")],
             "interface/list/member": self.WAN,
             "ip/arp": [{"address": "192.168.0.1", "interface": "ether5", "status": "reachable",
                         "mac-address": "02:00:00:00:01:01", "complete": "true"}],
         }), Atlas.empty())
-        self.assertEqual(net.devices, ())
-        self.assertEqual([segment.key for segment in net.segments], ["bridge_main"])
+        self.assertEqual([(device.key, device.homes) for device in net.devices], [("02:00:00:00:01:01", ("ether5",))])
+        self.assertEqual(net.puzzles, ())
 
     def test_a_real_internet_address_means_there_is_no_outpost(self):
+        """The provider's side is the internet: no yard, and its neighbours are nobody's."""
         net = Network.of(snapshot(**{
             "ip/address": [HOME, address("95.24.13.7/24", "ether5", "95.24.13.0", dynamic="true")],
             "interface/list/member": self.WAN,
+            "ip/arp": [{"address": "95.24.13.1", "interface": "ether5", "status": "reachable",
+                        "mac-address": "02:00:00:00:01:02", "complete": "true"}],
         }), Atlas.empty())
         self.assertIsNone(net.outpost)
+        self.assertEqual([segment.key for segment in net.segments], ["bridge_main"])
+        self.assertEqual((net.devices, net.puzzles), ((), ()))
 
     def test_without_a_route_table_we_do_not_name_the_gate(self):
         """The gateway is not guessed: an ARP neighbour and who is in charge are different things."""
@@ -208,8 +218,9 @@ class RealSnapshotTest(unittest.TestCase):
     def setUp(self):
         self.net = Network.of(Snapshot.read(FIXTURE), Atlas.empty())
 
-    def test_five_castles_and_one_of_them_appears_with_the_vpn(self):
-        self.assertEqual(len(self.net.segments), 5)
+    def test_five_castles_one_with_the_vpn_and_the_yard_beyond_the_gate(self):
+        self.assertEqual(len(self.net.segments), 6)
+        self.assertEqual([segment.network for segment in self.net.segments if segment.outside], ["192.168.0.0/24"])
         vpn = [segment for segment in self.net.segments if segment.temporary]
         self.assertEqual([segment.network for segment in vpn], ["192.168.216.0/24"])
         self.assertIn("LAN", vpn[0].lists)
@@ -223,9 +234,10 @@ class RealSnapshotTest(unittest.TestCase):
         self.assertEqual(self.net.puzzles, ())
 
     def test_devices_without_a_name_are_counted_not_invented(self):
-        """Twelve, not nineteen: seven ARP records went unanswered and became no dwellers."""
+        """Thirteen, not twenty: seven ARP records went unanswered and became no dwellers, and the
+        gate beyond the WAN port has no name either."""
         unnamed = [device for device in self.net.devices if not device.name]
-        self.assertEqual(len(unnamed), 12)
+        self.assertEqual(len(unnamed), 13)
         self.assertTrue(all(device.name == "" for device in unnamed))
 
 

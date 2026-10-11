@@ -25,7 +25,7 @@ router in the middle.
 | Moss on a road | the rule has not fired in a long time |
 | The same house in two yards | one device in several networks: it stands in each of them, and behind it lies the shadow of itself in the other one's colour. Point at it and every copy lights up |
 | Tunnel | a network that comes and goes — the Back to Home VPN — while nobody is known to be in it. Once it has members it is drawn as a yard like any other, with a dashed fence |
-| Outpost by the pier | the private network beyond the gate, when the way out does not lead straight to the internet |
+| Yard with a fence of loose stones | the private network beyond the gate — "beyond the gateway" — when the way out does not lead straight to the internet: not ours, so it has no lines of access of its own, no fog through its eyes, and the map knocks at no doors in it. Its houses are those the router has met there, named like any other |
 
 That is all that is on the map itself. Ports, rules and counters appear on hover and in the
 scroll on click.
@@ -39,7 +39,7 @@ When one wall of the router gets crowded, the router grows: a busy crossroads ou
 big. Where roads cross anyway, one goes over a bridge rather than merging.
 
 The map can be laid out to taste: subnets, the router and the way out are dragged with a
-mouse. The roads are recalculated as you drag — they are tied to subnets, not
+mouse — a subnet by its name board alone, so that a click in its yard stays a click. The roads are recalculated as you drag — they are tied to subnets, not
 to points on the canvas, and they follow. Houses stand in their subnet's yard and travel with
 it. The layout lands in `data/layout.json` and is the same for everyone who opens the map: it
 is shared, not one per viewer.
