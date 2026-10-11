@@ -539,7 +539,6 @@
  "puzzle.stray-address": "address {ip} fell into none of the known networks",
  "reach.but-many": "exceptions:",
  "reach.but-one": "exception:",
- "reach.for": "open for this device of the network",
  "reach.for-whom": "for {who}",
  "reach.home": "its own network: everything is open",
  "reach.home-most": "its own network: everything is open but the exceptions",

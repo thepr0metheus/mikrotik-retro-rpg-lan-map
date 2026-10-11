@@ -635,8 +635,8 @@ class Scroll {
 
   //: What a line of access is, at a glance. Pointing at a mark names it in words. A line with
   //: exceptions is the other way round from them: "most" is open but for the ⛔ ones, "only" is
-  //: shut but for the ✅ ones — an address, an address and a port, or a device of the network.
-  static MARKS = { home: '✅🏠', 'home-most': '✅🏠', open: '✅', most: '✅', port: '✅', for: '✅', shut: '⛔', only: '⛔' };
+  //: shut but for the ✅ ones — an address, or an address and a port, for all or for one device.
+  static MARKS = { home: '✅🏠', 'home-most': '✅🏠', open: '✅', most: '✅', port: '✅', shut: '⛔', only: '⛔' };
   //: What every line of access starts with: the way goes from here to the place on the line.
   static WAY = '➡️';
   //: How the router came to know an address.
@@ -679,12 +679,20 @@ class Scroll {
     const meaning = [say(`reach.${row.mark}`), row.rules].filter(Boolean).join('\n');
     const parts = [Scroll.mark(Scroll.MARKS[row.mark], meaning), ` ${row.title}`];
     if (row.but && row.but.length) {
-      const word = Object.assign(document.createElement('span'), {
-        className: 'quiet', textContent: say(row.but.length > 1 ? 'reach.but-many' : 'reach.but-one'),
-      });
-      parts.push(Scroll.marked([[word, Scroll.marked(row.but.map((one) => Scroll.reachLine(one)), 'under')]], 'under'));
+      const word = Scroll.quiet(say(row.but.length > 1 ? 'reach.but-many' : 'reach.but-one'));
+      parts.push(Scroll.marked([[word, Scroll.marked(row.but.map((one) => Scroll.reachItem(one)), 'under')]], 'under'));
     }
     return parts;
+  }
+
+  /** One exception: a line, or a device's own exceptions under its name, "for iPad 8:". */
+  static reachItem(item) {
+    if (!item.lines) return Scroll.reachLine(item);
+    return [Scroll.quiet(item.label), Scroll.marked(item.lines.map((one) => Scroll.reachLine(one)), 'under')];
+  }
+
+  static quiet(text) {
+    return Object.assign(document.createElement('span'), { className: 'quiet', textContent: text });
   }
 
   static list(items) {
@@ -2890,6 +2898,16 @@ class MapPage extends Page {
     const only = (but) => ({ title, mark: 'only', rules: closers, but });
     const at = (address, port, name) => `${[address, port].filter(Boolean).join(' ')}${name ? ` / ${name}` : ''}`;
     const ports = (labels, address, name) => labels.map((label) => ({ title: at(address, label, name), mark: 'port' }));
+    // What a reach opens of the network, line by line: the whole of it, ports of it, machines in it.
+    const opened = (reach) => ({
+      open: () => [{ title: where, mark: 'open' }],
+      ports: () => ports(reach.ports, where),
+      hosts: () => reach.hosts.flatMap((host) => (host.ports.length ? ports(host.ports, host.ip, host.name)
+        : [{ title: at(host.ip, '', host.name), mark: 'open' }])),
+    }[reach.state] || (() => []))();
+    // A few devices of the subnet have their own: each under its name.
+    const theirs = (verdict && verdict.others || []).map((one) => ({
+      label: `${say('reach.for-whom', { who: one.name })}:`, lines: opened(one.verdict) }));
     if (!verdict) {
       if (!way || way.width === 'shut') return shut();
       return way.width === 'ports' ? only(ports(way.ports, where)) : open();
@@ -2897,10 +2915,9 @@ class MapPage extends Page {
     const lines = {
       home: () => ({ title, mark: 'home' }),
       open,
-      ports: () => only(ports(verdict.ports, where)),
-      hosts: () => only(verdict.hosts.flatMap((host) => (host.ports.length ? ports(host.ports, host.ip, host.name)
-        : [{ title: at(host.ip, '', host.name), mark: 'open' }]))),
-      some: () => only(verdict.members.map((name) => ({ title: say('reach.for-whom', { who: name }), mark: 'for' }))),
+      ports: () => only([...opened(verdict), ...theirs]),
+      hosts: () => only([...opened(verdict), ...theirs]),
+      some: () => only(theirs),
       shut,
     };
     return (lines[verdict.state] || shut)();

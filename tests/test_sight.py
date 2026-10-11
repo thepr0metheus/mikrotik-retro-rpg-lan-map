@@ -83,8 +83,24 @@ class SightTest(unittest.TestCase):
 
     def test_a_rule_for_one_device_is_not_the_subnets_reach_but_is_told_apart(self):
         seen = self.look(segment="home")
-        self.assertEqual(seen["nas"], {"state": "some", "members": ["phone"]})
+        self.assertEqual(seen["nas"], {"state": "some", "members": ["phone"],
+                                       "others": [{"device": "p", "name": "phone", "verdict": {"state": "open"}}]})
         self.assertEqual(seen["lab"], {"state": "shut"}, "a road the router keeps shut reaches nothing")
+
+    def test_a_devices_own_rule_stands_beside_what_the_whole_subnet_has(self):
+        """The guests reach the NAS on one port, and one phone of theirs on another as well: the
+        subnet's view keeps both, the phone's own apart."""
+        world = {**WORLD, "roads": [road("ups", "nas",
+                                         opening("192.168.40.0/24", "192.168.20.10", protocol="tcp", ports="8065"),
+                                         opening("192.168.40.200", "192.168.20.10", protocol="tcp", ports="5001"),
+                                         width="ports")]}
+        done = subprocess.run([NODE, str(HARNESS), json.dumps(world), json.dumps({"segment": "ups"})],
+                              capture_output=True, text=True, check=True)
+        nas = json.loads(done.stdout)["nas"]
+        self.assertEqual(nas["state"], "hosts")
+        self.assertEqual([(host["name"], host["ports"]) for host in nas["hosts"]], [("NAS", ["tcp 8065"])])
+        self.assertEqual(nas["others"], [{"device": "u", "name": "UPS KSTAR", "verdict": {"state": "hosts", "hosts": [
+            {"device": "n", "name": "NAS", "ip": "192.168.20.10", "ports": ["tcp 5001"]}]}}])
 
     def test_a_device_reaches_what_its_own_address_passes(self):
         self.assertEqual(self.look(device="p")["nas"], {"state": "open"})

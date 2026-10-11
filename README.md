@@ -62,8 +62,9 @@ The interface around the map:
   names. What goes the other way follows the word "exception", each on a line of its own, a step
   in: under «✅ internet» the pieces it leaves out, «⛔ 10.0.0.0/8», each with its own rule under
   its mark; under a dark network an address open in it, or an address and a port, «✅
-  192.168.20.10 tcp 8065 / NAS», ports in the order of their numbers; or the devices of the
-  subnet it is open for. The router has no line of its own: its address in the onlooker's
+  192.168.20.10 tcp 8065 / NAS», ports in the order of their numbers. In a subnet's view, what
+  one device of the subnet has on its own stands under its name, «for iPad 8:», beside what
+  the whole subnet has. The router has no line of its own: its address in the onlooker's
   network is one of that network's, so it stands inside that network's line, as an exception
   when it is not as open as the rest — «⛔ 192.168.10.1 / the router itself» with its open ports
   as exceptions of its own. A seat says online or old lease and how the

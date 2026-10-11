@@ -134,16 +134,29 @@ class Sight {
     return opening.ports === this.anyPort && opening.protocol === this.anyProtocol;
   }
 
-  /** How much of one network the openings reach: all of their pieces taken together. */
+  /**
+   * How much of one network the openings reach: what all of the onlookers share, and, beside it,
+   * what a few devices of a subnet have on their own — `others`, each told as that device's own
+   * reach is. A network open to everyone needs no others; one shut to everyone but open to a
+   * few is "some".
+   */
   judge(key, { all, few }) {
+    const own = this.reach(key, all);
+    if (!few.length || own.state === 'open') return own;
+    const others = this.others(key, few);
+    if (own.state === 'shut') return { state: 'some', members: others.map((one) => one.name), others };
+    return { ...own, others };
+  }
+
+  /** How much of one network some openings reach: all of their pieces taken together. */
+  reach(key, openings) {
     const segment = this.world.segments.find((one) => one.key === key);
     const range = segment ? Sight.range(segment.network) : null;
-    const reaches = (openings) => openings.length > 0
-      && (!range || Sight.covers(openings.flatMap((opening) => opening.to || []), range[0], range[1]));
-    if (reaches(all.filter((opening) => this.every(opening)))) return { state: 'open' };
-    if (reaches(all)) return { state: 'ports', ports: Sight.byPort([...new Set(all.map((opening) => this.label(opening)))]) };
-    if (all.length) return { state: 'hosts', hosts: this.hosts(key, all) };
-    if (few.length) return { state: 'some', members: this.members(few) };
+    const reaches = (list) => list.length > 0
+      && (!range || Sight.covers(list.flatMap((opening) => opening.to || []), range[0], range[1]));
+    if (reaches(openings.filter((opening) => this.every(opening)))) return { state: 'open' };
+    if (reaches(openings)) return { state: 'ports', ports: Sight.byPort([...new Set(openings.map((opening) => this.label(opening)))]) };
+    if (openings.length) return { state: 'hosts', hosts: this.hosts(key, openings) };
     return { state: 'shut' };
   }
 
@@ -175,19 +188,26 @@ class Sight {
     return [...found.values()].map(({ any, ...host }) => ({ ...host, ports: any ? [] : Sight.byPort(host.ports) }));
   }
 
-  /** The few devices of the subnet an opening is meant for, by name or address. */
-  members(openings) {
-    const names = [];
+  /**
+   * The few devices of the subnet some openings are meant for, each with what its own openings
+   * reach of the network. An address no device holds is still told, by itself: a rule for a
+   * device that is away is still a rule.
+   */
+  others(key, openings) {
+    const holds = (device, opening) => device.seats.some((seat) => {
+      const ip = Sight.number(seat.ip);
+      return ip !== null && Sight.covers(opening.from, ip, ip);
+    });
+    const found = [];
     for (const device of this.world.devices) {
-      for (const seat of device.seats) {
-        const ip = Sight.number(seat.ip);
-        if (ip !== null && openings.some((opening) => Sight.covers(opening.from, ip, ip))) {
-          const name = device.name || seat.ip;
-          if (!names.includes(name)) names.push(name);
-        }
-      }
+      const mine = openings.filter((opening) => holds(device, opening));
+      if (mine.length) found.push({ device: device.key, name: device.name || device.seats[0].ip, verdict: this.reach(key, mine) });
     }
-    return names.length ? names : [...new Set(openings.map((opening) => opening.source))];
+    const loose = openings.filter((opening) => !this.world.devices.some((device) => holds(device, opening)));
+    for (const source of [...new Set(loose.map((opening) => opening.source))]) {
+      found.push({ device: '', name: source, verdict: this.reach(key, loose.filter((opening) => opening.source === source)) });
+    }
+    return found;
   }
 }
 
