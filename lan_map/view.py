@@ -79,6 +79,8 @@ class View:
             "taken": self.network.taken,
             "segments": [self.segment(segment, order) for order, segment in enumerate(self.network.segments)],
             "devices": [self.device(device) for device in self.network.devices],
+            # What the owner wrote down about ports: what sits there and why it is open.
+            "ports": dict(self.atlas.ports),
             "roads": [self.road(road) for road in self.roads.roads],
             "findings": [self.finding(finding) for finding in self.roads.findings],
             "notes": [self.tongue.tell(note) for note in

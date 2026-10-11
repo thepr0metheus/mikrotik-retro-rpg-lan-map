@@ -26,6 +26,10 @@ class Atlas:
     devices: dict = field(default_factory=dict)
     #: groups of addresses belonging to one device: the map joins them into one house
     same: tuple = ()
+    #: what sits on a port and why it is open, by place and port: "router udp 53" → "DNS". The
+    #: place is "router" for any of the router's own addresses, otherwise an address or a
+    #: network as a line of access writes it ("192.168.20.10", "192.168.20.x").
+    ports: dict = field(default_factory=dict)
 
     #: What kinds used to be called, before they became codes. An atlas written by an older
     #: map is still the owner's work: it is read, not thrown away.
@@ -69,7 +73,8 @@ class Atlas:
         return cls(segments=payload.get("segments", {}),
                    devices={key: cls.catch_up(entry)
                             for key, entry in payload.get("devices", {}).items()},
-                   same=tuple(tuple(group) for group in payload.get("same", ())))
+                   same=tuple(tuple(group) for group in payload.get("same", ())),
+                   ports=dict(payload.get("ports", {})))
 
     @classmethod
     def catch_up(cls, entry: dict) -> dict:
@@ -122,6 +127,15 @@ class Atlas:
             devices.pop(key, None)
         return replace(self, devices=devices)
 
+    def with_port(self, key: str, note: str) -> "Atlas":
+        """The atlas with what a port is for written down. An empty note removes the line."""
+        ports = dict(self.ports)
+        if note:
+            ports[key] = note
+        else:
+            ports.pop(key, None)
+        return replace(self, ports=ports)
+
     def write(self, path) -> None:
         """Written through a temporary file: an interrupted write leaves no half-atlas."""
         path = Path(path)
@@ -130,7 +144,7 @@ class Atlas:
         try:
             with os.fdopen(handle, "w", encoding="utf-8") as file:
                 json.dump({"segments": self.segments, "devices": self.devices,
-                           "same": [list(group) for group in self.same]},
+                           "same": [list(group) for group in self.same], "ports": self.ports},
                           file, ensure_ascii=False, indent=1)
                 file.write("\n")
             os.replace(temporary, path)

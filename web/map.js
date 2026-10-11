@@ -690,11 +690,77 @@ class Scroll {
   static reachLine(row) {
     const meaning = [say(`reach.${row.mark}`), row.rules].filter(Boolean).join('\n');
     const parts = [Scroll.mark(Scroll.MARKS[row.mark], meaning), ` ${row.title}`];
+    if (row.note && (row.note.text || row.note.save)) parts.push(Scroll.note(row.note));
     if (row.but && row.but.length) {
       const word = Scroll.quiet(say(row.but.length > 1 ? 'reach.but-many' : 'reach.but-one'));
       parts.push(Scroll.marked([[word, Scroll.marked(row.but.map((one) => Scroll.reachItem(one)), 'under')]], 'under'));
     }
     return parts;
+  }
+
+  //: The longest note the server keeps: lan_map/server.py, MapApp.NOTE_MOST.
+  static NOTE_MOST = 200;
+
+  /**
+   * What a line is for, after the line: "— Vaultwarden". When the map may be changed from here, a
+   * pen writes or changes it in place; saved, the note changes at once on every line of the
+   * scroll kept under the same key, and Escape leaves it as it was.
+   */
+  static note(note) {
+    const node = document.createElement('span');
+    node.className = 'note';
+    node.dataset.key = note.key;
+    const show = (text) => {
+      const parts = text ? [Scroll.quiet(` — ${text}`)] : [];
+      if (note.save) {
+        const pen = document.createElement('button');
+        pen.type = 'button';
+        pen.className = 'pen';
+        pen.textContent = '✎';
+        pen.title = say('reach.note.edit');
+        pen.setAttribute('aria-label', say('reach.note.edit'));
+        pen.addEventListener('click', () => write(text));
+        parts.push(' ', pen);
+      }
+      node.replaceChildren(...parts);
+    };
+    const write = (text) => {
+      const row = document.createElement('span');
+      row.className = 'naming';
+      const field = document.createElement('input');
+      field.type = 'text';
+      field.value = text;
+      field.maxLength = Scroll.NOTE_MOST;
+      field.placeholder = say('reach.note.placeholder');
+      const save = document.createElement('button');
+      save.type = 'button';
+      save.textContent = say('save');
+      const send = async () => {
+        field.disabled = true;
+        save.disabled = true;
+        const kept = await note.save(field.value.trim());
+        if (kept === null) {
+          field.disabled = false;
+          save.disabled = false;
+          return;
+        }
+        const scroll = node.closest('.scroll') || node.parentNode;
+        for (const other of (scroll ? scroll.querySelectorAll('.note') : [node])) {
+          if (other.dataset.key === note.key && other.show) other.show(kept);
+        }
+      };
+      save.addEventListener('click', send);
+      field.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') send();
+        if (event.key === 'Escape') show(text);
+      });
+      row.append(field, save);
+      node.replaceChildren(row);
+      field.focus();
+    };
+    node.show = show;
+    show(note.text);
+    return node;
   }
 
   /** One exception: a line, or a device's own exceptions under its name, "for iPad 8:". */
@@ -2769,7 +2835,8 @@ class MapPage extends Page {
     const verdicts = device ? sight.ofDevice(device) : sight.ofSegment(segment);
     const { internet, router } = this.world.ends;
     const line = (key, at) => this.reachLine(key === router ? null : verdicts.get(key), this.way(sight, key, device, segment),
-                                             this.closers(key, device, segment), this.placeOf(key, at), this.addressOf(key, at));
+                                             this.closers(key, device, segment), this.placeOf(key, at), this.addressOf(key, at),
+                                             key === router ? 'router' : '');
     const number = (one) => (Sight.range(one.network) || [Infinity])[0];
     const networks = [...this.world.segments].sort((a, b) => number(a) - number(b));
     const lines = networks.map((one) => {
@@ -2860,28 +2927,34 @@ class MapPage extends Page {
    * address, or an address and a port, with the machine's name when the map knows it; of a
    * network open only for some devices of the subnet, those devices. The verdict is the
    * network's, or for the router itself the road's width; `where` is the place's own addresses.
+   *
+   * A line of an address, or of an address and a port, carries what a human wrote down about
+   * it: what sits there and why it is open. `spot` is what such a note is kept under — the
+   * router's lines are "router" in every network, whichever of its addresses they show.
    */
-  reachLine(verdict, way, closers, title, where) {
+  reachLine(verdict, way, closers, title, where, spot = '') {
+    const place = spot || where;
     const pieces = way && way.width === 'most'
       ? way.shut.map((piece) => ({ title: piece.where, mark: 'shut', rules: this.ruleNames(piece.by) })) : [];
     const open = () => (pieces.length ? { title, mark: 'most', but: pieces } : { title, mark: 'open' });
     const shut = () => ({ title, mark: 'shut', rules: closers });
     const only = (but) => ({ title, mark: 'only', rules: closers, but });
     const at = (address, port, name) => `${[address, port].filter(Boolean).join(' ')}${name ? ` / ${name}` : ''}`;
-    const ports = (labels, address, name) => labels.map((label) => ({ title: at(address, label, name), mark: 'port' }));
+    const ports = (labels, address, name, kept = address) => labels.map((label) => ({
+      title: at(address, label, name), mark: 'port', note: this.note(kept, label) }));
     // What a reach opens of the network, line by line: the whole of it, ports of it, machines in it.
     const opened = (reach) => ({
-      open: () => [{ title: where, mark: 'open' }],
-      ports: () => ports(reach.ports, where),
+      open: () => [{ title: where, mark: 'open', note: this.note(place) }],
+      ports: () => ports(reach.ports, where, '', place),
       hosts: () => reach.hosts.flatMap((host) => (host.ports.length ? ports(host.ports, host.ip, host.name)
-        : [{ title: at(host.ip, '', host.name), mark: 'open' }])),
+        : [{ title: at(host.ip, '', host.name), mark: 'open', note: this.note(host.ip) }])),
     }[reach.state] || (() => []))();
     // A few devices of the subnet have their own: each under its name.
     const theirs = (verdict && verdict.others || []).map((one) => ({
       label: `${say('reach.for-whom', { who: one.name })}:`, lines: opened(one.verdict) }));
     if (!verdict) {
       if (!way || way.width === 'shut') return shut();
-      return way.width === 'ports' ? only(ports(way.ports, where)) : open();
+      return way.width === 'ports' ? only(ports(way.ports, where, '', place)) : open();
     }
     const lines = {
       home: () => ({ title, mark: 'home' }),
@@ -2892,6 +2965,38 @@ class MapPage extends Page {
       shut,
     };
     return (lines[verdict.state] || shut)();
+  }
+
+  /**
+   * What a human wrote down about a line of access, "Vaultwarden" or "DNS of the router": the key
+   * it is kept under — the place, and the protocol and ports when there are any — the words, and
+   * a way to change them when the map may be changed from here. None for a line with no place.
+   */
+  note(spot, label = '') {
+    if (!spot) return null;
+    const key = [spot, label].filter(Boolean).join(' ');
+    return { key, text: (this.world.ports || {})[key] || '',
+             save: this.world.move.allowed ? (text) => this.notePort(key, text) : null };
+  }
+
+  /**
+   * Writes down what a line of access is for; an empty note takes it away. The words as the map
+   * kept them, or null when it did not keep them — the reason is said above the page.
+   */
+  async notePort(key, text) {
+    let answer;
+    try {
+      answer = await Api.request('PUT', '/api/port', { key, note: text });
+    } catch (err) {
+      this.warn(say('save.failed', { why: err.message }));
+      return null;
+    }
+    this.warn('');
+    const ports = { ...(this.world.ports || {}) };
+    if (answer.note) ports[answer.key] = answer.note;
+    else delete ports[answer.key];
+    this.world.ports = ports;
+    return answer.note;
   }
 
   /** One line of "where it may go": the castle, how wide, and what narrows it. */

@@ -460,6 +460,26 @@ class MapApp:
                     raise Refusal(500, Said.of("refuse.specs-not-saved", why=error.strerror or error)) from error
         return next(one for one in self.specs(tongue)["devices"] if one["device"] == keys[0])
 
+    #: A port's place and the port, as a line of access writes them: "router udp 67-68",
+    #: "192.168.20.10 tcp 443", "192.168.20.x tcp 25565-25567", or a machine alone.
+    PORT_KEY = re.compile(r"(router|\d{1,3}\.\d{1,3}\.\d{1,3}\.(\d{1,3}|x))( [a-z0-9-]{1,16}( \d[\d, -]{0,40})?)?")
+    NOTE_MOST = 200
+
+    def note_port(self, key: str, note: str) -> dict:
+        """What a port is for, in the owner's words: the atlas keeps it beside the names."""
+        key, note = key.strip(), " ".join(note.split())
+        if not self.PORT_KEY.fullmatch(key):
+            raise Refusal(400, Said.of("refuse.not-a-port", port=key))
+        if len(note) > self.NOTE_MOST:
+            raise Refusal(400, Said.of("refuse.note-too-long", most=self.NOTE_MOST))
+        atlas = Atlas.read(self.atlas_path).with_port(key, note)
+        try:
+            atlas.write(self.atlas_path)
+        except OSError as error:
+            raise Refusal(500, Said.of("refuse.atlas-not-saved",
+                                       why=error.strerror or error)) from error
+        return {"key": key, "note": atlas.ports.get(key, "")}
+
     def name_segment(self, key: str, fields: dict) -> dict:
         """A castle's name and colour. A colour is six hex digits, or the map turns gaudy."""
         title = fields.get("title")
@@ -564,6 +584,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         ("PUT", "/api/layout"): "put_layout",
         ("PUT", "/api/device"): "put_device",
         ("PUT", "/api/segment"): "put_segment",
+        ("PUT", "/api/port"): "put_port",
         ("GET", "/api/houses"): "get_houses",
         ("GET", "/api/names"): "get_names",
         ("GET", "/containers.md"): "get_containers_text",
@@ -696,6 +717,17 @@ class RequestHandler(BaseHTTPRequestHandler):
         if not fields or not all(isinstance(value, str) for value in fields.values()):
             raise Refusal(400, Said.of("refuse.title-colour-strings"))
         self.send_json(200, self.app.name_segment(body["segment"], fields))
+
+    def put_port(self) -> None:
+        """Writes down what sits on a port and why it is open: {key, note}, the key as a line of
+        access names the place and the port ("router udp 53", "192.168.20.10 tcp 443"). An
+        empty note removes it."""
+        self.allow_write(self.moving())
+        body = self.read_json()
+        if not isinstance(body, dict) or not isinstance(body.get("key"), str) \
+                or not isinstance(body.get("note"), str):
+            raise Refusal(400, Said.of("refuse.want-port"))
+        self.send_json(200, self.app.note_port(body["key"], body["note"]))
 
     def get_houses(self) -> None:
         """Who is out there: both lists, and what each of them is naming right now."""

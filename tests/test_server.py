@@ -564,7 +564,7 @@ class ServerTest(unittest.TestCase):
         status, payload = self.site.ask("GET", "/api/map")
         self.assertEqual(status, 200)
         self.assertEqual({"lang", "taken", "segments", "devices", "roads", "findings", "notes",
-                          "ends", "outpost", "changes", "traffic", "signpost", "move", "layout",
+                          "ends", "outpost", "changes", "traffic", "signpost", "move", "layout", "ports",
                           "here", "docker", "gate", "refresh_on_open"},
                          set(payload))
         self.assertTrue(payload["segments"] and payload["roads"])
@@ -679,6 +679,23 @@ class ServerTest(unittest.TestCase):
         self.assertEqual((status, payload["title"]), (200, "Датчики"))
         titles = [segment["title"] for segment in self.site.ask("GET", "/api/map")[1]["segments"]]
         self.assertIn("Датчики", titles)
+
+    def test_home_writes_down_what_a_port_is_for_and_an_empty_note_takes_it_back(self):
+        """The owner signs a line of access: what sits on the port and why it is open."""
+        self.with_snapshot()
+        status, payload = self.site.ask("PUT", "/api/port", {"key": "router udp 53", "note": "  DNS   роутера "})
+        self.assertEqual((status, payload), (200, {"key": "router udp 53", "note": "DNS роутера"}))
+        self.site.ask("PUT", "/api/port", {"key": "192.168.20.10 tcp 25565-25567", "note": "Minecraft"})
+        self.assertEqual(self.site.ask("GET", "/api/map")[1]["ports"],
+                         {"router udp 53": "DNS роутера", "192.168.20.10 tcp 25565-25567": "Minecraft"})
+        self.assertEqual(self.site.ask("PUT", "/api/port", {"key": "router udp 53", "note": ""})[1]["note"], "")
+        self.assertEqual(self.site.ask("GET", "/api/map")[1]["ports"], {"192.168.20.10 tcp 25565-25567": "Minecraft"})
+
+    def test_a_port_note_is_refused_from_a_guest_for_a_strange_key_and_when_too_long(self):
+        self.assertEqual(self.site.ask("PUT", "/api/port", {"key": "router udp 53", "note": "x"}, who=GUEST)[0], 403)
+        self.assertEqual(self.site.ask("PUT", "/api/port", {"key": "rm -rf /", "note": "x"})[0], 400)
+        self.assertEqual(self.site.ask("PUT", "/api/port", {"key": "router tcp 22", "note": "x" * 201})[0], 400)
+        self.assertEqual(self.site.ask("PUT", "/api/port", {"key": "router tcp 22"})[0], 400)
 
     def test_a_colour_that_is_not_a_colour_is_refused(self):
         status, payload = self.site.ask("PUT", "/api/segment", {"segment": "vlan30_iot", "colour": "синий"})

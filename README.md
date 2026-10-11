@@ -90,7 +90,11 @@ The interface around the map:
   the whole subnet has. The router has no line of its own: its address in the onlooker's
   network is one of that network's, so it stands inside that network's line, as an exception
   when it is not as open as the rest — «⛔ 192.168.10.1 / the router itself» with its open ports
-  as exceptions of its own. A seat says online or old lease and how the
+  as exceptions of its own. A line of an address, or of an address and a port, carries what a
+  human wrote down about it — what sits there and why it is open, «✅ 192.168.20.10 tcp 443 —
+  the password vault»; from a network that may move things, the ✎ after the line writes it in
+  place, and Escape leaves it as it was. The router's lines are noted once for every network,
+  whichever of its addresses they show. A seat says online or old lease and how the
   router knows it in marks too (📄 lease, 🔗 ARP, 🔐 VPN peer, 🗺️ the router's own map). A click on a subnet's heading or fence
   does the same for the whole subnet: dark is what none of its devices may reach. A network
   reached whole but on some ports only is striped, the ports written on it; a network where
@@ -287,6 +291,11 @@ means making things up:
   set, empty ones wiped, the rest kept. From a network that may move things, any device's card
   and its name; from any other network the map is shown to, only the card of the device the
   request comes from — an agent writes down the machine it runs on — and never the name.
+- `PUT /api/port` — what sits on a line of access and why it is open: `{key, note}`, the key as
+  the scroll keeps it — the place, then the protocol and ports when there are any: `router udp
+  53`, `192.168.20.10 tcp 443`, `192.168.20.x`. An empty note takes it away; at most 200
+  characters. Only from a network that may move things, with an `Origin` header like any write.
+  The notes come back in `/api/map` as `ports`.
 - `/openapi.json` — every route the map answers, as OpenAPI 3.1, open like `/healthz`. It is
   read off the server's own table, `RequestHandler.ROUTES`, and off the handlers: the first
   paragraph of a docstring is what a route does, its code says which questions it reads and
@@ -477,7 +486,7 @@ believes — and its container watcher with no network at all.
 | `history/` | the collector | the last 12 snapshots, for looking at how the network was |
 | `names.json` | the map, with every snapshot | which name the router gave which address, and when that was last seen; forgotten after two weeks |
 | `layout.json` | the map, when a thing is dragged | where things stand, the same for everyone |
-| `atlas.json` | the map, when a name or kind is chosen | what a device is called and which picture to draw |
+| `atlas.json` | the map, when a name, a kind or a note is chosen | what a device is called and which picture to draw; what sits on a port and why it is open |
 | `settings.json` | the map, when the tick boxes change | who sees the map |
 | `router.env` | the owner | the router's password; never goes into git |
 | `specs.json` | the map, when the owner or an agent writes a card | what each machine is made of: device key → lines, when and by whom |
